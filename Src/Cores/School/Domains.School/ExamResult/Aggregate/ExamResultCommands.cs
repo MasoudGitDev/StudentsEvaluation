@@ -10,7 +10,7 @@ public partial class ExamResult {
             CourseId = courseId ,
             TeacherId = teacherId ,
             StudentId = studentId ,
-            ExamDate = examDate ,
+            ExamDateTime = examDate ,
             Score = score
         };
 }
