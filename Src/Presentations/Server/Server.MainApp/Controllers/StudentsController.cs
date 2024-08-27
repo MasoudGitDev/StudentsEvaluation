@@ -10,7 +10,7 @@ using Shared.Files.Models;
 namespace Server.MainApp.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class StudentsController(IMediator _mediator) : ControllerBase {
+public class StudentsController(IMediator _mediator) : SchoolController {
 
 
     [HttpGet("All")]
