@@ -1,5 +1,8 @@
 ﻿using Domains.School.Abstractions;
+using Domains.School.Course.Repo;
+using Domains.School.ExamResult.Repo;
 using Domains.School.Student.Repo;
+using Domains.School.Teacher.Repo;
 using Infra.SqlServerWithEF.Contexts;
 using Infra.SqlServerWithEF.Impls.School;
 using Microsoft.EntityFrameworkCore;
@@ -14,11 +17,15 @@ public static class ServiceCollectionExtensions {
 
         services.AddDbContext<AppDbContext>(builder => {
             builder.UseSqlServer(configuration.GetDefaultConnectionString());
-            builder.EnableSensitiveDataLogging();  
+            builder.EnableSensitiveDataLogging();
         });
 
         // school services
         services.AddScoped<IStudentQueries , StudentQueries>();
+        services.AddScoped<ITeacherQueries , TeacherQueries>();
+        services.AddScoped<ICourseQueries , CourseQueries>();
+        services.AddScoped<IExamResultQueries , ExamResultQueries>();
+
         services.AddScoped<ISchoolQueries , SchoolQueries>();
         services.AddScoped<ISchoolUOW , SchoolUnitOfWork>();
         return services;
