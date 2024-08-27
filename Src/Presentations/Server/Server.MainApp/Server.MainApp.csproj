@@ -8,11 +8,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Mapster" Version="7.4.1-pre01" />
+    <PackageReference Include="MediatR" Version="12.4.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
+    <ProjectReference Include="..\..\..\Cores\School\Apps.School\Apps.School.csproj" />
+    <ProjectReference Include="..\..\..\Infra\Infra.SqlServerWithEF\Infra.SqlServerWithEF.csproj" />
+    <ProjectReference Include="..\..\..\Shared\Shared.Files\Shared.Files.csproj" />
   </ItemGroup>
 
 </Project>
