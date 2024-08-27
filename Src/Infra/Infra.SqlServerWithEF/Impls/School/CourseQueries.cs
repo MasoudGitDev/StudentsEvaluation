@@ -9,6 +9,10 @@ internal class CourseQueries(AppDbContext _dbContext) : ICourseQueries {
         return _dbContext.Courses.ToListAsync();
     }
 
+    public async Task<Course?> GetByCodeAsync(string courseCode) {
+        return await _dbContext.Courses.FirstOrDefaultAsync(x => x.Code == courseCode);
+    }
+
     public async Task<Course?> GetByIdAsync(ulong id) {
         return await _dbContext.Courses.FirstOrDefaultAsync(x => x.Id == id);
     }
