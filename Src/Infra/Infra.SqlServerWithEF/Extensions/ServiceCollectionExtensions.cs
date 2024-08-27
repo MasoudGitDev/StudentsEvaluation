@@ -1,4 +1,7 @@
-﻿using Infra.SqlServerWithEF.Contexts;
+﻿using Domains.School.Abstractions;
+using Domains.School.Student.Repo;
+using Infra.SqlServerWithEF.Contexts;
+using Infra.SqlServerWithEF.Impls.School;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,6 +17,10 @@ public static class ServiceCollectionExtensions {
             builder.EnableSensitiveDataLogging();  
         });
 
+        // school services
+        services.AddScoped<IStudentQueries , StudentQueries>();
+        services.AddScoped<ISchoolQueries , SchoolQueries>();
+        services.AddScoped<ISchoolUOW , SchoolUnitOfWork>();
         return services;
     }
 }
