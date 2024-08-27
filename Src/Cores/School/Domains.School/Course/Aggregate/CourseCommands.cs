@@ -1,8 +1,9 @@
 ﻿namespace Domains.School.Course.Aggregate;
 public partial class Course {
-    public static Course New(ulong code , string name)
+    public static Course New(string code , string name , ulong teacherId)
         => new() {
              Code = code ,
-             Name = name
+             Name = name , 
+             TeacherId = teacherId
         };
 }
