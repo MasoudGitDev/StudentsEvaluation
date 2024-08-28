@@ -1,11 +1,8 @@
 ﻿using Apps.School.Domains.Students.Commands;
 using Apps.School.Domains.Students.Queries;
-using Domains.School.Student.Aggregate;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Files.DTOs;
-using Shared.Files.Extensions;
 using Shared.Files.Models;
 using Shared.Files.Validators.School;
 
@@ -16,18 +13,19 @@ public class StudentsController(IMediator _mediator , IServiceProvider _serviceP
     : SchoolController(_mediator , _serviceProvider) {
 
     [HttpGet("All")]
-    public async Task<Result<List<Student>>> GetAllAsync() {
-        return await _mediator.Send(GetStudents.New());
+    public async Task<Result<List<StudentDto>>> GetAllAsync([FromQuery] PaginationDto? model) {
+        var (usePagination , pageNumber , pageSize) = model ?? new PaginationDto(true , 1 , 50);
+        return await _mediator.Send(GetStudents.New(usePagination,pageNumber,pageSize));
+    }
+
+    [HttpGet("CalculateAverageScore/{nationalCode}")]
+    public async Task<Result<StudentMeanScoreDto>> CalculateAverageScoreAsync(string nationalCode) {
+        return await _mediator.Send(new GetStudentMeanScore(nationalCode));
     }
 
     [HttpPost("Create")]
     public async Task<Result> CreateAsync([FromBody] StudentDto model) {
-       return await ValidationResult<StudentDtoValidator, StudentDto, Create>(model);
-    }
-
-    [HttpPost("CalculateAverageScore/{nationalCode}")]
-    public async Task<Result<StudentMeanScoreDto>> CalculateAverageScoreAsync(string nationalCode) {
-        return await _mediator.Send(new GetStudentMeanScore(nationalCode));
+        return await ValidationResult<StudentDtoValidator , StudentDto , Create>(model);
     }
 
 
