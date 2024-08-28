@@ -14,8 +14,7 @@ public class StudentsController(IMediator _mediator , IServiceProvider _serviceP
 
     [HttpGet("All")]
     public async Task<Result<List<StudentDto>>> GetAllAsync([FromQuery] PaginationDto? model) {
-        var (usePagination , pageNumber , pageSize) = model ?? new PaginationDto(true , 1 , 50);
-        return await _mediator.Send(GetStudents.New(usePagination,pageNumber,pageSize));
+        return await _mediator.Send(GetStudents.New(model ?? new()));
     }
 
     [HttpGet("CalculateAverageScore/{nationalCode}")]
