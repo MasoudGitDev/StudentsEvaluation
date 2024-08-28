@@ -7,6 +7,7 @@ using FluentAssertions;
 using Shared.Files.Models;
 using Shared.Files.DTOs;
 using Shared.Files.Exceptions;
+using Apps.School.Constants;
 
 namespace UnTests.Apps.School.Students.Queries;
 public class GetStudentMeanScoreHandlerTest {
@@ -19,33 +20,34 @@ public class GetStudentMeanScoreHandlerTest {
     }
 
     [Fact]
-    public async Task Handle_Should_Return_SuccessResult_With_AverageScore() {
+    public async Task Handle_Should_Return_SuccessResult_With_Expected_AverageScore() {
         //Arrange
         var request = new GetStudentMeanScore("testNationCode");
 
         Student student = Student.New("Student_FN_1" , "Student_LN_1" , request.NationalCode);
-        _unitOfWork.Setup(x=>x.Queries.Students.GetByNationalCode(request.NationalCode))
+        _unitOfWork.Setup(x=>x.Queries.Students.GetByNationalCodeAsync(request.NationalCode))
             .ReturnsAsync(student);
 
         List<ExamResult> expectedExams = CreateFakeExamResult(student.Id);
         _unitOfWork.Setup(x => x.Queries.Exams.GetStudentExamsAsync(student.Id))
             .ReturnsAsync(expectedExams);
+        float expectedAveScore = 17.5f;
 
         //Act
         var result = await _handler.Handle(request,default);
 
         //Assert
         result.Should().BeOfType<Result< StudentMeanScoreDto>>();
-        result.Model?.AverageScore.Should().Be(17.5f);
+        result.Model?.AverageScore.Should().Be(expectedAveScore);
         _unitOfWork.VerifyAll();
     }
 
     [Fact]
-    public async Task Handle_Should_Throw_Exception_When_NationalCode_IsInValid() {
+    public async Task Handle_Should_Throw_Exception_When_Student_NoExist_With_NationalCode() {
         //Arrange
         var request = new GetStudentMeanScore("testNationCode");
 
-        _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCode(request.NationalCode))
+        _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.NationalCode))
             .ReturnsAsync((Student?)null);
 
         //Act
@@ -53,12 +55,12 @@ public class GetStudentMeanScoreHandlerTest {
 
         //Assert
         var exception = await action.Should().ThrowExactlyAsync<CustomException>();
-        exception.Which.Description.Should().Be($"The Student with national code : <{request.NationalCode}> not found.");
+        exception.Which.Description.Should().Be(string.Format(MessageResults.NotFoundStudent, request.NationalCode));
         _unitOfWork.Verify(x => x.Queries.Exams.GetStudentExamsAsync(It.IsAny<ulong>()) , Times.Never);
     }
 
     //====================
-    private List<ExamResult> CreateFakeExamResult(ulong studentId) {
+    private static List<ExamResult> CreateFakeExamResult(ulong studentId) {
         List<ExamResult> examResults = [];
         ulong courseId_1 = 1;
         for(int i = 0 ; i < 10 ; i++) {
@@ -74,7 +76,7 @@ public class GetStudentMeanScoreHandlerTest {
         ulong courseId_2 = 2;
         for(int i = 0 ; i < 10 ; i++) {
             examResults.Add(ExamResult.New(
-                courseId_1 ,
+                courseId_2 ,
                 2 ,
                 studentId ,
                 DateTime.UtcNow.AddDays(1) ,
