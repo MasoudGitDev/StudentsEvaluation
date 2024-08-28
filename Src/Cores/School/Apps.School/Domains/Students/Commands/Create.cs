@@ -1,4 +1,5 @@
-﻿using Domains.School.Abstractions;
+﻿using Apps.School.Constants;
+using Domains.School.Abstractions;
 using Domains.School.Shared.Extensions;
 using Domains.School.Student.Aggregate;
 using Mapster;
@@ -15,9 +16,8 @@ internal sealed class CreateStudentHandler(ISchoolUOW _unitOfWork)
     public override async Task<Result> Handle(Create request , CancellationToken cancellationToken) {
 
         ( await GetStudentByCodeAsync(request.NationalCode) )
-            .ThrowIfNotNull(description: $"The student with national code : <{request.NationalCode}> found.");
+            .ThrowIfNotNull(MessageResults.FoundStudent , request.NationalCode);
 
-        return await CreateAndSaveAsync(request.Adapt<Student>() ,
-            $"The new student with national code : <{request.NationalCode}> has been created successfully.");
+        return await CreateAndSaveAsync(request.Adapt<Student>() , MessageResults.CreateStudent , request.NationalCode);
     }
 }

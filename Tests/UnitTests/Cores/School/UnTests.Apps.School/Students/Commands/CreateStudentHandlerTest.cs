@@ -1,4 +1,5 @@
-﻿using Apps.School.Domains.Students.Commands;
+﻿using Apps.School.Constants;
+using Apps.School.Domains.Students.Commands;
 using Domains.School.Abstractions;
 using Domains.School.Student.Aggregate;
 using FluentAssertions;
@@ -20,7 +21,7 @@ public class CreateStudentHandlerTest {
         Create request = new("Student_FN_1" , "Student_LN_1" , "Student_NC_1");
 
         
-        _unitOfWork.Setup(x=> x.Queries.Students.GetByNationalCode(request.NationalCode))
+        _unitOfWork.Setup(x=> x.Queries.Students.GetByNationalCodeAsync(request.NationalCode))
             .ReturnsAsync((Student?)null);
 
         Student student = Student.New(request.FirstName, request.LastName,request.NationalCode);
@@ -33,8 +34,7 @@ public class CreateStudentHandlerTest {
         var result = await _handler.Handle(request,default);
 
         //Assert
-        result.Should().BeEquivalentTo(Result
-            .Success($"The new student with national code : <{request.NationalCode}> has been created successfully."));
+        result.Should().BeEquivalentTo(Result.Success(String.Format(MessageResults.CreateStudent , request.NationalCode)));
         _unitOfWork.VerifyAll();
     }
 
@@ -44,7 +44,7 @@ public class CreateStudentHandlerTest {
         Create request = new("Student_FN_1" , "Student_LN_1" , "Student_NC_1");
         Student student = Student.New(request.FirstName, request.LastName,request.NationalCode);
 
-        _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCode(request.NationalCode))
+        _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.NationalCode))
             .ReturnsAsync(student);
 
         //Act
@@ -52,7 +52,7 @@ public class CreateStudentHandlerTest {
 
         //Assert
         var exception = await Assert.ThrowsAsync<CustomException>(action);
-        exception.Description.Should().BeEquivalentTo($"The student with national code : <{request.NationalCode}> found.");
+        exception.Description.Should().BeEquivalentTo(String.Format(MessageResults.FoundStudent , request.NationalCode));
         _unitOfWork.Verify(x=> x.SaveChangesAsync() , Times.Never);
     }
 }
