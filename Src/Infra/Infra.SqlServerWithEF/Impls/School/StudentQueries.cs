@@ -5,8 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Infra.SqlServerWithEF.Impls.School;
 internal sealed class StudentQueries(AppDbContext _dbContext) : IStudentQueries {
-    public async Task<List<Student>> GetAllAsync() {
-        return await _dbContext.Students.ToListAsync();
+    public async Task<List<Student>> GetAllAsync(bool usePagination = true , int pageNumber = 1 , int pageSize = 50) {
+        return usePagination ?
+            await _dbContext.Students
+                .Skip(( pageNumber - 1 ) * pageSize)
+                .Take(pageSize)
+                .ToListAsync() :
+            await _dbContext.Students.ToListAsync();
     }
 
     public async Task<Student?> GetById(ulong id) {
