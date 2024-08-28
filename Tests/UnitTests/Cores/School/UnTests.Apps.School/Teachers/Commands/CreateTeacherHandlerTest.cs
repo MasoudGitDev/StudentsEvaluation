@@ -1,4 +1,5 @@
-﻿using Apps.School.Domains.Teachers.Commands;
+﻿using Apps.School.Constants;
+using Apps.School.Domains.Teachers.Commands;
 using Domains.School.Abstractions;
 using Domains.School.Teacher.Aggregate;
 using FluentAssertions;
@@ -34,8 +35,7 @@ public class CreateTeacherHandlerTest {
         var result = await _handler.Handle(request, default);
 
         //Assert
-        result.Should().BeEquivalentTo(Result.Success($"The new teacher with personnel code : " +
-            $"<{request.PersonnelCode}> has been created successfully"));
+        result.Should().BeEquivalentTo(Result.Success(String.Format(MessageResults.CreateTeacher , request.PersonnelCode)));
         _mockUnitOfWork.VerifyAll();
     }
 
@@ -53,7 +53,7 @@ public class CreateTeacherHandlerTest {
 
         //Assert
         var exception = await Assert.ThrowsAsync<CustomException>(action);
-        exception.Description.Should().Be($"A teacher with personnel code : <{request.PersonnelCode}> found.");
-        _mockUnitOfWork.Verify(x=>x.SaveChangesAsync(),Times.Never);
+        exception.Description.Should().Be(String.Format(MessageResults.FoundTeacher , request.PersonnelCode));
+        _mockUnitOfWork.Verify(x => x.SaveChangesAsync() , Times.Never);
     }
 }
