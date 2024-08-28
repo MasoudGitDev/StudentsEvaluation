@@ -1,4 +1,5 @@
-﻿using Domains.School.Abstractions;
+﻿using Apps.School.Constants;
+using Domains.School.Abstractions;
 using Domains.School.Shared.Extensions;
 using Domains.School.Teacher.Aggregate;
 using Mapster;
@@ -15,9 +16,8 @@ internal sealed class CreateTeacherHandler(ISchoolUOW _unitOfWork)
     public override async Task<Result> Handle(Create request , CancellationToken cancellationToken) {
 
         ( await FindTeacherByCodeAsync(request.PersonnelCode) )
-            .ThrowIfNotNull(description: $"A teacher with personnel code : <{request.PersonnelCode}> found.");
+            .ThrowIfNotNull(MessageResults.FoundTeacher , request.PersonnelCode);
 
-        return await CreateAndSaveAsync(request.Adapt<Teacher>() ,
-            $"The new teacher with personnel code : <{request.PersonnelCode}> has been created successfully");
+        return await CreateAndSaveAsync(request.Adapt<Teacher>() , MessageResults.CreateTeacher , request.PersonnelCode);
     }
 }
