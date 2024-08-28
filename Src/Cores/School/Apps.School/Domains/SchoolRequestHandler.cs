@@ -1,6 +1,7 @@
 ﻿using Domains.School.Abstractions;
 using Domains.School.Course.Aggregate;
 using Domains.School.ExamResult.Aggregate;
+using Domains.School.Student.Aggregate;
 using Domains.School.Teacher.Aggregate;
 using MediatR;
 using Shared.Files.Models;
@@ -23,6 +24,14 @@ internal abstract class SchoolRequestHandler<TRequest, TResult>(ISchoolUOW _unit
 
 
     // Queries
+
+    protected async Task<List<ExamResult>> GetStudentExamsAsync(ulong studentId)
+        => await _unitOfWork.Queries.Exams.GetStudentExamsAsync(studentId);
+
+
+    protected async Task<Student?> GetStudentByCodeAsync(string nationalCode)
+        => await _unitOfWork.Queries.Students.GetByNationalCode(nationalCode);
+
     protected async Task<List<Course>> GetCoursesAsync()
         => await _unitOfWork.Queries.Courses.GetAllAsync();
 
