@@ -1,9 +1,9 @@
-﻿using Domains.School.Abstractions;
+﻿using Apps.School.Constants;
+using Domains.School.Abstractions;
 using Domains.School.Course.Aggregate;
 using MediatR;
 using Shared.Files.Extensions;
 using Shared.Files.Models;
-using Shared.Files.ValueObjects;
 
 namespace Apps.School.Domains.Courses.Commands;
 public sealed record Create(string Code , string Name , string TeacherPersonnelCode) : IRequest<Result> {
@@ -17,14 +17,13 @@ internal sealed class CreateCourseHandler(ISchoolUOW _unitOfWork)
     public override async Task<Result> Handle(Create request , CancellationToken cancellationToken) {
 
         var teacher = ( await FindTeacherByCodeAsync(request.TeacherPersonnelCode) )
-            .ThrowIfNull(Description.New($"No teacher found with " +
-                $"personnel code: <{request.TeacherPersonnelCode}> to represent the course."));
+            .ThrowIfNull(MessageResults.NotFoundTeacher,request.TeacherPersonnelCode);
 
         ( await FindCourseByCodeAsync(request.Code) )
-            .ThrowIfNotNull(Description.New($"A course with code: <{request.Code}> already exists."));
+            .ThrowIfNotNull(MessageResults.FoundCourse , request.Code);
 
         return await CreateAndSaveAsync(Course.New(request.Code , request.Name , teacher.Id) ,
-            $"The new course with code: <{request.Code}> has been created successfully");
+            MessageResults.CreateCourse , request.Code);
     }
 
 
