@@ -1,4 +1,4 @@
 ﻿namespace Apps.School.Constants;
 internal enum QueryPropertyNames {
-    Courses,
+    Courses,Students
 }
