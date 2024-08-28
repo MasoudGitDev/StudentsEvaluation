@@ -2,7 +2,6 @@
 using Domains.School.Abstractions;
 using Domains.School.Student.Aggregate;
 using FluentAssertions;
-using Mapster;
 using Moq;
 using Shared.Files.DTOs;
 using Shared.Files.Models;
@@ -24,13 +23,14 @@ public class GetStudentsHandlerTest {
     [InlineData(2 , 20)]
     public async Task Handle_Should_always_Return_SuccessResult_With_Use_Pagination(int pageNumber , int pageSize) {
         //Arrange
-        GetStudents request = GetStudents.New(true, pageNumber, pageSize);
+        PaginationDto paginationDto = new(true,pageNumber,pageSize);
+        GetStudents request = GetStudents.New(paginationDto);
 
         List<Student> students = CreateFakeStudents() ;
         List<Student> expectedStudents = students
             .Skip((pageNumber-1)*pageNumber).Take(pageSize).ToList();
 
-        _unitOfWork.Setup(x => x.Queries.Students.GetAllAsync(true , pageNumber , pageSize))
+        _unitOfWork.Setup(x => x.Queries.Students.GetAllAsync(paginationDto))
             .ReturnsAsync(expectedStudents);
 
         //Act
@@ -45,10 +45,10 @@ public class GetStudentsHandlerTest {
     [Fact]
     public async Task Handle_Should_always_Return_SuccessResult_Without_Use_Pagination() {
         //Arrange
-        GetStudents request = GetStudents.New(false, 1, 50);
+        GetStudents request = GetStudents.New(new(false));
 
         List<Student> students = CreateFakeStudents() ;
-        _unitOfWork.Setup(x => x.Queries.Students.GetAllAsync(request.UsePagination , request.PageNumber , request.PageSize))
+        _unitOfWork.Setup(x => x.Queries.Students.GetAllAsync(request.Model))
             .ReturnsAsync(students);
 
         //Act
