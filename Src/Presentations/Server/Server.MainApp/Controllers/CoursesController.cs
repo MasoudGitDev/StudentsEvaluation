@@ -1,6 +1,5 @@
 ﻿using Apps.School.Domains.Courses.Commands;
 using Apps.School.Domains.Courses.Queries;
-using Domains.School.Course.Aggregate;
 using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -15,8 +14,8 @@ public class CoursesController(IMediator _mediator , IServiceProvider _servicePr
     : SchoolController(_mediator , _serviceProvider) {
 
     [HttpGet("All")]
-    public async Task<Result<List<Course>>> GetAllAsync() {
-        return await _mediator.Send(GetCourses.New());
+    public async Task<Result<List<CourseDto>>> GetAllAsync([FromQuery] PaginationDto? model) {
+        return await _mediator.Send(GetCourses.New(model ?? new()));
     }
 
     [HttpPost("Create")]
