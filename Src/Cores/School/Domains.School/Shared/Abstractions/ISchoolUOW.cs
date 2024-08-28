@@ -1,4 +1,6 @@
-﻿namespace Domains.School.Abstractions {
+﻿using Domains.School.Shared.Abstractions;
+
+namespace Domains.School.Abstractions {
     public interface ISchoolUOW {
         public ISchoolQueries Queries { get; }
 
