@@ -1,4 +1,5 @@
 ﻿using Domains.School.Abstractions;
+using Domains.School.Shared.Abstractions;
 using Infra.SqlServerWithEF.Contexts;
 
 namespace Infra.SqlServerWithEF.Impls.School;

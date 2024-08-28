@@ -1,6 +1,7 @@
 ﻿using Domains.School.Abstractions;
 using Domains.School.Course.Repo;
 using Domains.School.ExamResult.Repo;
+using Domains.School.Shared.Abstractions;
 using Domains.School.Student.Repo;
 using Domains.School.Teacher.Repo;
 using Infra.SqlServerWithEF.Contexts;
