@@ -11,7 +11,8 @@ namespace Server.MainApp.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class CoursesController(IMediator _mediator) : SchoolController {
+public class CoursesController(IMediator _mediator , IServiceProvider _serviceProvider)
+    : SchoolController(_mediator , _serviceProvider) {
 
     [HttpGet("All")]
     public async Task<Result<List<Course>>> GetAllAsync() {

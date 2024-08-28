@@ -10,7 +10,8 @@ using Shared.Files.Models;
 namespace Server.MainApp.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class TeachersController(IMediator _mediator) : SchoolController {
+public class TeachersController(IMediator _mediator,IServiceProvider _serviceProvider) 
+    : SchoolController(_mediator , _serviceProvider) {
 
     [HttpGet("All")]
     public async Task<Result<List<Teacher>>> GetAllAsync() {

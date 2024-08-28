@@ -8,7 +8,8 @@ using Shared.Files.Models;
 namespace Server.MainApp.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class ExamResultsController(IMediator _mediator) : SchoolController {
+public class ExamResultsController(IMediator _mediator,IServiceProvider _serviceProvider) 
+    : SchoolController(_mediator, _serviceProvider) {
 
 
     [HttpPost("Create")]

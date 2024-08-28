@@ -5,13 +5,15 @@ using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Files.DTOs;
+using Shared.Files.Extensions;
 using Shared.Files.Models;
+using Shared.Files.Validators.School;
 
 namespace Server.MainApp.Controllers;
 [Route("api/[controller]")]
 [ApiController]
-public class StudentsController(IMediator _mediator) : SchoolController {
-
+public class StudentsController(IMediator _mediator , IServiceProvider _serviceProvider)
+    : SchoolController(_mediator , _serviceProvider) {
 
     [HttpGet("All")]
     public async Task<Result<List<Student>>> GetAllAsync() {
@@ -20,7 +22,7 @@ public class StudentsController(IMediator _mediator) : SchoolController {
 
     [HttpPost("Create")]
     public async Task<Result> CreateAsync([FromBody] StudentDto model) {
-        return await _mediator.Send(model.Adapt<Create>());
+       return await ValidationResult<StudentDtoValidator, StudentDto, Create>(model);
     }
 
     [HttpPost("CalculateAverageScore/{nationalCode}")]
