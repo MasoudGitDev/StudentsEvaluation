@@ -1,7 +1,17 @@
 ﻿using FluentValidation;
+using FluentValidation.Results;
+using Shared.Files.Models;
 
 namespace Shared.Files.Validators.Extensions;
 public static class ValidationExtensions {
+
+    public static List<MessageDescription> AsMessageDescriptions(this List<ValidationFailure> validationFailures) {
+        List<MessageDescription> errors = [];
+        foreach(ValidationFailure failure in validationFailures) {
+            errors.Add(MessageDescription.New(failure.ErrorCode,failure.ErrorMessage,Constants.AlertType.Error));
+        }
+        return errors;
+    }
 
     public static IRuleBuilderOptions<T , string> NotEmptyWithRange<T>(
         this IRuleBuilder<T , string> ruleBuilder ,
