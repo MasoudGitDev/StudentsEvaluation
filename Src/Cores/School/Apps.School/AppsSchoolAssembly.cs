@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.CompilerServices;
 
+
+[assembly: InternalsVisibleTo("UnTests.Apps.School")]
 namespace Apps.School;
 public class AppsSchoolAssembly {
 }
