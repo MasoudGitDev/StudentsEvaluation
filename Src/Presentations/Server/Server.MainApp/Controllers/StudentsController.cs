@@ -23,6 +23,11 @@ public class StudentsController(IMediator _mediator) : SchoolController {
         return await _mediator.Send(model.Adapt<Create>());
     }
 
+    [HttpPost("CalculateAverageScore/{nationalCode}")]
+    public async Task<Result<StudentMeanScoreDto>> CalculateAverageScoreAsync(string nationalCode) {
+        return await _mediator.Send(new GetStudentMeanScore(nationalCode));
+    }
+
 
 
 }
