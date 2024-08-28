@@ -1,21 +1,23 @@
-﻿using Domains.School.Student.Aggregate;
-using Shared.Files.Models;
-using MediatR;
+﻿using Apps.School.Constants;
 using Domains.School.Abstractions;
+using Domains.School.Shared.Extensions;
+using Domains.School.Student.Aggregate;
+using MediatR;
+using Shared.Files.DTOs;
+using Shared.Files.Models;
 
 namespace Apps.School.Domains.Students.Queries;
-public sealed record GetStudents : IRequest<Result<List<Student>>> {
-    public static GetStudents New() => new();
+public sealed record GetStudents(bool UsePagination = true , int PageNumber = 1 , int PageSize = 50)
+    : IRequest<Result<List<StudentDto>>> {
+    public static GetStudents New(bool usePagination = true , int pageNumber = 1 , int pageSize = 50)
+        => new(usePagination , pageNumber , pageSize);
 }
 
 
 //================handler
-internal sealed class GetStudentsHandler(ISchoolUOW _unitOfWork) : IRequestHandler<GetStudents , Result<List<Student>>> {
-    public async Task<Result<List<Student>>> Handle(GetStudents request , CancellationToken cancellationToken) {
-        var students = await _unitOfWork.Queries.Students.GetAllAsync();
-        string message = students.Count > 0
-            ? $"{students.Count} students found."
-            : "No students found.";
-        return Result<List<Student>>.Success(message , students);
-    }
+internal sealed class GetStudentsHandler(ISchoolUOW _unitOfWork)
+    : SchoolRequestHandler<GetStudents , Result<List<StudentDto>>>(_unitOfWork.MustHasValue()) {
+    public override async Task<Result<List<StudentDto>>> Handle(GetStudents request , CancellationToken cancellationToken)
+        => SuccessListResult(nameof(QueryPropertyNames.Students) ,
+            await GetStudentsAsync(request.UsePagination , request.PageNumber , request.PageSize));
 }
