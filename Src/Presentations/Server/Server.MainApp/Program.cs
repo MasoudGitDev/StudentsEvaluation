@@ -1,5 +1,6 @@
 using Apps.School;
-using Infra.SqlServerWithEF.Extensions; 
+using Infra.SqlServerWithEF.Extensions;
+using Shared.Files.Validators.School;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,11 @@ builder.Services.AddMediatR(config => {
         typeof(AppsSchoolAssembly).Assembly
     );
 });
+
+// Fluent Validation
+builder.Services.AddTransient(service => new StudentDtoValidator());
+builder.Services.AddTransient(service => new CourseDtoValidator());
+builder.Services.AddTransient(service => new TeacherDtoValidator());
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
