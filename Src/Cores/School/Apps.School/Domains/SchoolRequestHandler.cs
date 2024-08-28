@@ -3,7 +3,9 @@ using Domains.School.Course.Aggregate;
 using Domains.School.ExamResult.Aggregate;
 using Domains.School.Student.Aggregate;
 using Domains.School.Teacher.Aggregate;
+using Mapster;
 using MediatR;
+using Shared.Files.DTOs;
 using Shared.Files.Models;
 
 namespace Apps.School.Domains;
@@ -24,6 +26,10 @@ internal abstract class SchoolRequestHandler<TRequest, TResult>(ISchoolUOW _unit
 
 
     // Queries
+
+    protected async Task<List<StudentDto>> GetStudentsAsync(bool usePagination = true , int pageNumber = 1 , int pageSize = 50)
+        => (await _unitOfWork.Queries.Students.GetAllAsync(usePagination , pageNumber , pageSize))
+        .Adapt<List<StudentDto>>();
 
     protected async Task<List<ExamResult>> GetStudentExamsAsync(ulong studentId)
         => await _unitOfWork.Queries.Exams.GetStudentExamsAsync(studentId);
