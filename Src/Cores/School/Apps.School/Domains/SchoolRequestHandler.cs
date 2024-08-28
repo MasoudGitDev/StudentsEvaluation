@@ -23,23 +23,29 @@ internal abstract class SchoolRequestHandler<TRequest, TResult>(ISchoolUOW _unit
         await _unitOfWork.SaveChangesAsync();
         return Result.Success(message);
     }
-
+    protected async Task<Result> CreateAndSaveAsync<TEntity>(TEntity entity , string messageFormat , params string[] names)
+      where TEntity : class, new() {
+        await _unitOfWork.CreateAsync(entity);
+        await _unitOfWork.SaveChangesAsync();
+        return Result.Success(String.Format(messageFormat,names));
+    }
 
     // Queries
+    protected async Task<List<TeacherDto>> GetTeacherDTOsAsync(PaginationDto model)
+        => ( await _unitOfWork.Queries.Teachers.GetAllAsync(model)).Adapt<List<TeacherDto>>();
 
-    protected async Task<List<StudentDto>> GetStudentsAsync(bool usePagination = true , int pageNumber = 1 , int pageSize = 50)
-        => (await _unitOfWork.Queries.Students.GetAllAsync(usePagination , pageNumber , pageSize))
-        .Adapt<List<StudentDto>>();
+    protected async Task<List<StudentDto>> GetStudentDTOsAsync(PaginationDto model)
+        => (await _unitOfWork.Queries.Students.GetAllAsync(model)).Adapt<List<StudentDto>>();
 
     protected async Task<List<ExamResult>> GetStudentExamsAsync(ulong studentId)
         => await _unitOfWork.Queries.Exams.GetStudentExamsAsync(studentId);
 
 
     protected async Task<Student?> GetStudentByCodeAsync(string nationalCode)
-        => await _unitOfWork.Queries.Students.GetByNationalCode(nationalCode);
+        => await _unitOfWork.Queries.Students.GetByNationalCodeAsync(nationalCode);
 
-    protected async Task<List<Course>> GetCoursesAsync()
-        => await _unitOfWork.Queries.Courses.GetAllAsync();
+    protected async Task<List<CourseDto>> GetCoursesAsync(PaginationDto model)
+        => (await _unitOfWork.Queries.Courses.GetAllAsync(model)).Adapt<List<CourseDto>>();
 
     protected async Task<Course?> FindCourseByCodeAsync(string code)
         => await _unitOfWork.Queries.Courses.GetByCodeAsync(code);
