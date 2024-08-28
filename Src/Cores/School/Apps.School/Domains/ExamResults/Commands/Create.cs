@@ -1,4 +1,5 @@
-﻿using Domains.School.Abstractions;
+﻿using Apps.School.Constants;
+using Domains.School.Abstractions;
 using Domains.School.ExamResult.Aggregate;
 using Mapster;
 using MediatR;
@@ -19,14 +20,14 @@ internal sealed class CreateExamResultHandler(ISchoolUOW _unitOfWork)
     : SchoolRequestHandler<Create , Result>(_unitOfWork) {
     public override async Task<Result> Handle(Create request , CancellationToken cancellationToken) {
         if(request.ExamDateTime >= DateTime.UtcNow) {
-            return Result.Failed("The exam has not yet taken place.");
+            return Result.Failed(MessageResults.ExamDateError);
         }
         if(request.Score is < 0 or > 20) {
-            return Result.Failed($"The score must be within the range of 0 to 20. Provided score: {request.Score}.");
+            return Result.Failed(String.Format(MessageResults.InvalidScore,request.Score));
         }
         ( await HadStudentAnyExamAsync(request.StudentId , request.CourseId , request.ExamDateTime) )
-             .ThrowIfNotNull("Each student can only take one exam per course per day.");
+             .ThrowIfNotNull(MessageResults.OneExamPerCoursePerDay , string.Empty);
 
-        return await CreateAndSaveAsync(request.Adapt<ExamResult>() , "The exam result was created successfully.");
+        return await CreateAndSaveAsync(request.Adapt<ExamResult>() , MessageResults.CreateExamResult);
     }
 }
