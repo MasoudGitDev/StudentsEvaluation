@@ -8,6 +8,6 @@ public class StudentCourse {
     public ulong CourseId { get; private set; }
 
     //=========
-    public StudentModel Student { get; private set; }
-    public CourseModel Course { get; private set; }
+    public StudentModel Student { get; set; }
+    public CourseModel Course { get; set; }
 }
