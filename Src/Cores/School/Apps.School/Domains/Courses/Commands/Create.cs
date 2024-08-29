@@ -3,6 +3,7 @@ using Domains.School.Abstractions;
 using Domains.School.Course.Aggregate;
 using Mapster;
 using MediatR;
+using Shared.Files.Constants;
 using Shared.Files.Extensions;
 using Shared.Files.Models;
 

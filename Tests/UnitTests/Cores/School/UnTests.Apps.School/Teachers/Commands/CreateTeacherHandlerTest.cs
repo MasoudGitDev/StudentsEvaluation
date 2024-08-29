@@ -1,10 +1,10 @@
-﻿using Apps.School.Constants;
-using Apps.School.Domains.Teachers.Commands;
+﻿using Apps.School.Domains.Teachers.Commands;
 using Domains.School.Abstractions;
 using Domains.School.Teacher.Aggregate;
 using FluentAssertions;
 using Mapster;
 using Moq;
+using Shared.Files.Constants;
 using Shared.Files.Exceptions;
 using Shared.Files.Models;
 

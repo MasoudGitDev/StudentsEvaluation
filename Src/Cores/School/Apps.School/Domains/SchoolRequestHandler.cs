@@ -41,7 +41,7 @@ internal abstract class SchoolRequestHandler<TRequest, TResult>(ISchoolUOW _unit
         => await _unitOfWork.Queries.Exams.GetStudentExamsAsync(studentId);
 
 
-    protected async Task<Student?> GetStudentByCodeAsync(string nationalCode)
+    protected async Task<Student?> FindStudentByCodeAsync(string nationalCode)
         => await _unitOfWork.Queries.Students.GetByNationalCodeAsync(nationalCode);
 
     protected async Task<List<CourseDto>> GetCoursesAsync(PaginationDto model)

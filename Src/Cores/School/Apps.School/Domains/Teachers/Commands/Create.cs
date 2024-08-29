@@ -4,6 +4,7 @@ using Domains.School.Shared.Extensions;
 using Domains.School.Teacher.Aggregate;
 using Mapster;
 using MediatR;
+using Shared.Files.Constants;
 using Shared.Files.Extensions;
 using Shared.Files.Models;
 

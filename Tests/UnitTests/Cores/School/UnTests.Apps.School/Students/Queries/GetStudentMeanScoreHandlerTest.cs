@@ -1,13 +1,13 @@
-﻿using Domains.School.Abstractions;
-using Apps.School.Domains.Students.Queries;
-using Moq;
-using Domains.School.Student.Aggregate;
+﻿using Apps.School.Domains.Students.Queries;
+using Domains.School.Abstractions;
 using Domains.School.ExamResult.Aggregate;
+using Domains.School.Student.Aggregate;
 using FluentAssertions;
-using Shared.Files.Models;
+using Moq;
+using Shared.Files.Constants;
 using Shared.Files.DTOs;
 using Shared.Files.Exceptions;
-using Apps.School.Constants;
+using Shared.Files.Models;
 
 namespace UnTests.Apps.School.Students.Queries;
 public class GetStudentMeanScoreHandlerTest {
@@ -25,7 +25,7 @@ public class GetStudentMeanScoreHandlerTest {
         var request = new GetStudentMeanScore("testNationCode");
 
         Student student = Student.New("Student_FN_1" , "Student_LN_1" , request.NationalCode);
-        _unitOfWork.Setup(x=>x.Queries.Students.GetByNationalCodeAsync(request.NationalCode))
+        _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.NationalCode))
             .ReturnsAsync(student);
 
         List<ExamResult> expectedExams = CreateFakeExamResult(student.Id);
@@ -37,7 +37,7 @@ public class GetStudentMeanScoreHandlerTest {
         var result = await _handler.Handle(request,default);
 
         //Assert
-        result.Should().BeOfType<Result< StudentMeanScoreDto>>();
+        result.Should().BeOfType<Result<StudentMeanScoreDto>>();
         result.Model?.AverageScore.Should().Be(expectedAveScore);
         _unitOfWork.VerifyAll();
     }
@@ -48,14 +48,14 @@ public class GetStudentMeanScoreHandlerTest {
         var request = new GetStudentMeanScore("testNationCode");
 
         _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.NationalCode))
-            .ReturnsAsync((Student?)null);
+            .ReturnsAsync((Student?) null);
 
         //Act
         Func<Task<Result<StudentMeanScoreDto>>> action = async()=> await _handler.Handle(request, default);
 
         //Assert
         var exception = await action.Should().ThrowExactlyAsync<CustomException>();
-        exception.Which.Description.Should().Be(string.Format(MessageResults.NotFoundStudent, request.NationalCode));
+        exception.Which.Description.Should().Be(string.Format(MessageResults.NotFoundStudent , request.NationalCode));
         _unitOfWork.Verify(x => x.Queries.Exams.GetStudentExamsAsync(It.IsAny<ulong>()) , Times.Never);
     }
 

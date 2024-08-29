@@ -4,6 +4,7 @@ using Domains.School.Shared.Extensions;
 using Domains.School.Student.Aggregate;
 using Mapster;
 using MediatR;
+using Shared.Files.Constants;
 using Shared.Files.Extensions;
 using Shared.Files.Models;
 
@@ -15,7 +16,7 @@ internal sealed class CreateStudentHandler(ISchoolUOW _unitOfWork)
     : SchoolRequestHandler<Create , Result>(_unitOfWork.MustHasValue()) {
     public override async Task<Result> Handle(Create request , CancellationToken cancellationToken) {
 
-        ( await GetStudentByCodeAsync(request.NationalCode) )
+        ( await FindStudentByCodeAsync(request.NationalCode) )
             .ThrowIfNotNull(MessageResults.FoundStudent , request.NationalCode);
 
         return await CreateAndSaveAsync(request.Adapt<Student>() , MessageResults.CreateStudent , request.NationalCode);
