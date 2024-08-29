@@ -6,5 +6,5 @@ public partial class Teacher : Person {
     public string PersonnelCode { get; private set; } = null!;
 
     //============relationships
-    public ICollection<CourseModel> Courses { get; private set; } = [];
+    public ICollection<CourseModel> Courses { get; set; } = [];
 }
