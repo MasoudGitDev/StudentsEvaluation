@@ -1,5 +1,4 @@
-﻿using Apps.School.Constants;
-using Domains.School.Abstractions;
+﻿using Domains.School.Abstractions;
 using MediatR;
 using Shared.Files.Constants;
 using Shared.Files.DTOs;
