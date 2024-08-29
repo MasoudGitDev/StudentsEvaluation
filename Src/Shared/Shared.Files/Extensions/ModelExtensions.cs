@@ -1,4 +1,5 @@
-﻿using Shared.Files.Exceptions;
+﻿using Shared.Files.Constants;
+using Shared.Files.Exceptions;
 
 namespace Shared.Files.Extensions;
 public static class ModelExtensions {
@@ -21,5 +22,19 @@ public static class ModelExtensions {
             throw new CustomException("HasValue" , string.Format(messageFormat , names));
         }
         return model;
+    }
+
+    public static float MustScoreBeInRange(this float number) {
+        if(number >= 0f && number <= 20f) {
+            return number;
+        }
+        throw new CustomException("ScoreRangeError" , String.Format(MessageResults.InvalidScore , number));
+    }
+
+    public static DateTime MustDateTimeLessThanNow(this DateTime dateTime) {
+        if(dateTime >= DateTime.UtcNow) {
+            throw new CustomException("EqualOrBiggerDateTime" , MessageResults.DateTimeError);            
+        }
+        return dateTime;
     }
 }
