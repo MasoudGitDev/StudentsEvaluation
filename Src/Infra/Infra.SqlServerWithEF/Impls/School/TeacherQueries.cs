@@ -20,10 +20,8 @@ internal class TeacherQueries(AppDbContext _dbContext) : ITeacherQueries {
 
     public async Task<Teacher?> GetByPersonnelCodeAsync(string personnelCode) {
         return await _dbContext.Teachers
-            .Include(teacher=>teacher.Courses)
-            .ThenInclude(course => course.Students)
-            .ThenInclude(studentCourse => studentCourse.Student)
-            .ThenInclude(student => student.Exams)
+            .Include(teacher => teacher.Courses)
+            .ThenInclude(course => course.Exams)
             .FirstOrDefaultAsync(x => x.PersonnelCode == personnelCode);
     }
 }
