@@ -1,5 +1,6 @@
 ﻿using Domains.School.Abstractions;
 using Domains.School.ExamResult.Aggregate;
+using Domains.School.StudentCourse.Aggregate;
 using Mapster;
 using MediatR;
 using Shared.Files.Constants;
@@ -24,17 +25,20 @@ internal sealed class CreateExamResultHandler(ISchoolUOW _unitOfWork)
         examDateTime.MustDateTimeLessThanNow();
         score.MustScoreBeInRange();
 
-        await CheckObjectsExistenceAsync(personnelCode , courseCode , nationalCode , examDateTime);
+        (ulong teacherId,ulong courseId,ulong studentId)= await CheckObjectsExistenceAsync(personnelCode , courseCode , nationalCode , examDateTime);
+        var studentCourse = StudentCourse.New(studentId, courseId);
+        await _unitOfWork.CreateAsync(studentCourse);
 
-        return await CreateAndSaveAsync(request.Adapt<ExamResult>() , MessageResults.CreateExamResult);
+        return await CreateAndSaveAsync(ExamResult.New(courseId,teacherId,studentId , examDateTime , score),
+            MessageResults.CreateExamResult , []);
     }
 
-    private async Task CheckObjectsExistenceAsync(string teacherPersonnelCode ,
+    private async Task<(ulong TeacherId,ulong CourseId,ulong StudentId)> CheckObjectsExistenceAsync(string teacherPersonnelCode ,
         string courseCode ,
         string studentNationalCode ,
         DateTime examDateTime) {
 
-        ( await FindTeacherByCodeAsync(teacherPersonnelCode) )
+        var teacher = ( await FindTeacherByCodeAsync(teacherPersonnelCode) )
             .ThrowIfNull(MessageResults.NotFoundTeacher , teacherPersonnelCode);
 
         var course = ( await FindCourseByCodeAsync(courseCode) )
@@ -45,6 +49,7 @@ internal sealed class CreateExamResultHandler(ISchoolUOW _unitOfWork)
 
         ( await HadStudentAnyExamAsync(student.Id , course.Id , examDateTime) )
             .ThrowIfNotNull(MessageResults.OneExamPerCoursePerDay , string.Empty);
+        return (teacher.Id, course.Id, student.Id);
     }
 
 }
