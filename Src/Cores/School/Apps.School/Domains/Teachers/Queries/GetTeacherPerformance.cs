@@ -7,7 +7,6 @@ using Shared.Files.DTOs;
 using Shared.Files.Exceptions;
 using Shared.Files.Extensions;
 using Shared.Files.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace Apps.School.Domains.Teachers.Queries;
 public sealed record GetTeacherPerformance(string PersonnelCode) : IRequest<Result<List<TeacherPerformanceDto>>> {
@@ -33,7 +32,7 @@ internal sealed class GetTeacherPerformanceHandler(ISchoolUOW _unitOfWork)
     }
     private static Task<TeacherPerformanceDto> CalcAverageCourseScore(Course teacherCourse) {
         try {
-            var studentsScore = (teacherCourse.Students.Select((x)=> x.Student.Exams.Average(x => x.Score)));
+            var studentsScore = (teacherCourse.Exams.Select((x)=> x.Course.Exams.Average(x => x.Score)));
             return Task.FromResult(new TeacherPerformanceDto(teacherCourse.Code ,
                 teacherCourse.Name ,
                 studentsScore.Count() ,
