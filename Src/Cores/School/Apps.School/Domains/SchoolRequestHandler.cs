@@ -29,6 +29,20 @@ internal abstract class SchoolRequestHandler<TRequest, TResult>(ISchoolUOW _unit
         }
     }
 
+    protected Result<StudentMeanScoreDto> CalculateStudentAverageScore(Student student) {
+        var studentExamResults = student.Exams.Where(examResult=> examResult.StudentId == student.Id);
+        if(studentExamResults is null || student.Exams.Count <= 0) {
+            return Result<StudentMeanScoreDto>
+                .Failed($"Not found any exam for Student with national-code : <{student.NationalCode}> ");
+        }
+        float averageScore = studentExamResults.Average(x => x.Score);
+        return Result<StudentMeanScoreDto>.Success("OK" , new(
+            student.FirstName ,
+            student.LastName ,
+            student.NationalCode ,
+            averageScore));
+    }
+
     // Queries
     protected async Task<List<TeacherDto>> GetTeacherDTOsAsync(PaginationDto model)
         => ( await _unitOfWork.Queries.Teachers.GetAllAsync(model)).Adapt<List<TeacherDto>>();
