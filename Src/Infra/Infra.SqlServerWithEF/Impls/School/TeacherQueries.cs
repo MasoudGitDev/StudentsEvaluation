@@ -1,4 +1,5 @@
-﻿using Domains.School.Teacher.Aggregate;
+﻿using Domains.School.StudentCourse.Aggregate;
+using Domains.School.Teacher.Aggregate;
 using Domains.School.Teacher.Repo;
 using Infra.SqlServerWithEF.Contexts;
 using Microsoft.EntityFrameworkCore;
@@ -18,6 +19,11 @@ internal class TeacherQueries(AppDbContext _dbContext) : ITeacherQueries {
     }
 
     public async Task<Teacher?> GetByPersonnelCodeAsync(string personnelCode) {
-        return await _dbContext.Teachers.FirstOrDefaultAsync(x => x.PersonnelCode == personnelCode);
+        return await _dbContext.Teachers
+            .Include(teacher=>teacher.Courses)
+            .ThenInclude(course => course.Students)
+            .ThenInclude(studentCourse => studentCourse.Student)
+            .ThenInclude(student => student.Exams)
+            .FirstOrDefaultAsync(x => x.PersonnelCode == personnelCode);
     }
 }
