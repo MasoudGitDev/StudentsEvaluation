@@ -16,10 +16,7 @@ internal sealed class GetStudentMeanScoreHandler(ISchoolUOW _unitOfWork)
         var student = ( await FindStudentByCodeAsync(request.NationalCode) )
             .ThrowIfNull(MessageResults.NotFoundStudent , request.NationalCode);
 
-        var averageScore = (await GetStudentExamsAsync(student.Id)).Average(x=> x.Score);
-
-        return Result<StudentMeanScoreDto>.Success("Ok" ,
-            new StudentMeanScoreDto(student.FirstName , student.LastName , student.NationalCode , averageScore));
+        return CalculateStudentAverageScore(student);
 
     }
 }
