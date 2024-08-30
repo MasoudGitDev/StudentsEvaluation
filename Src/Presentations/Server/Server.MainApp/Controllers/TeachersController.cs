@@ -12,9 +12,14 @@ namespace Server.MainApp.Controllers;
 public class TeachersController(IMediator _mediator , IServiceProvider _serviceProvider)
     : SchoolController(_mediator , _serviceProvider) {
 
-    [HttpGet("All")]
-    public async Task<Result<List<TeacherDto>>> GetAllAsync(PaginationDto model) {
+    [HttpGet("GetAll")]
+    public async Task<Result<List<TeacherDto>>> GetAllAsync([FromQuery] PaginationDto model) {
         return await _mediator.Send(GetTeachers.New(model ?? new()));
+    }
+
+    [HttpGet("GetTeacherPerformance/{personnelCode}")]
+    public async Task<Result<List<TeacherPerformanceDto>>> GetTeacherPerformanceAsync([FromRoute] string personnelCode) {
+        return await _mediator.Send(GetTeacherPerformance.New(personnelCode));
     }
 
     [HttpPost("Create")]
