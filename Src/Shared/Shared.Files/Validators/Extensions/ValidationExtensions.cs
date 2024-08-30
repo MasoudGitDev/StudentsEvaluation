@@ -8,7 +8,7 @@ public static class ValidationExtensions {
     public static List<MessageDescription> AsMessageDescriptions(this List<ValidationFailure> validationFailures) {
         List<MessageDescription> errors = [];
         foreach(ValidationFailure failure in validationFailures) {
-            errors.Add(MessageDescription.New(failure.ErrorCode,failure.ErrorMessage,Constants.AlertType.Error));
+            errors.Add(MessageDescription.Error(failure.ErrorCode,failure.ErrorMessage));
         }
         return errors;
     }
