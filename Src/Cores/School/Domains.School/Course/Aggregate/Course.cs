@@ -1,4 +1,5 @@
-﻿using StudentCourseModel = Domains.School.StudentCourse.Aggregate.StudentCourse;
+﻿using ExamResultModel = Domains.School.ExamResult.Aggregate.ExamResult;
+using StudentCourseModel = Domains.School.StudentCourse.Aggregate.StudentCourse;
 using TeacherModel = Domains.School.Teacher.Aggregate.Teacher;
 
 namespace Domains.School.Course.Aggregate;
@@ -12,4 +13,5 @@ public partial class Course {
     //================Relationships
     public TeacherModel Teacher { get; set; }
     public ICollection<StudentCourseModel> Students { get; set; }
+    public ICollection<ExamResultModel> Exams { get; set; }
 }
