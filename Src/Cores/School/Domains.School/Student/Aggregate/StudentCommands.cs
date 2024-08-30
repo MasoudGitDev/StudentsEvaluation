@@ -12,6 +12,6 @@ public partial class Student {
            Id = id ,
            FirstName = firstName ,
            LastName = lastName ,
-           NationalCode = nationalCode,           
+           NationalCode = nationalCode ,
        };
 }
