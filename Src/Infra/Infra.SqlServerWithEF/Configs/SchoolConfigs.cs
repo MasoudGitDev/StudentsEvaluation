@@ -53,6 +53,10 @@ internal class SchoolConfigs :
         builder.HasOne(x => x.Teacher).WithMany(x => x.Courses).IsRequired()
             .HasForeignKey(x => x.TeacherId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasMany(x => x.Exams).WithOne(x => x.Course).IsRequired()
+            .HasForeignKey(x => x.CourseId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 
     public void Configure(EntityTypeBuilder<ExamResult> builder) {
