@@ -24,6 +24,6 @@ internal sealed class CreateCourseHandler(ISchoolUOW _unitOfWork)
         ( await FindCourseByCodeAsync(request.Code) )
             .ThrowIfNotNull(MessageResults.FoundCourse , request.Code);
 
-        return await CreateAndSaveAsync(request.Adapt<Course>() , MessageResults.CreateCourse , request.Code);
+        return await CreateAndSaveAsync(Course.New(request.Code,request.Name,teacher.Id) , MessageResults.CreateCourse , request.Code);
     }
 }
