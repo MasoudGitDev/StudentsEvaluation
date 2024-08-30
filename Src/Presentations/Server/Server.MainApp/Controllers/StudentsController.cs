@@ -12,21 +12,24 @@ namespace Server.MainApp.Controllers;
 public class StudentsController(IMediator _mediator , IServiceProvider _serviceProvider)
     : SchoolController(_mediator , _serviceProvider) {
 
-    [HttpGet("All")]
+    [HttpGet("GetAll")]
     public async Task<Result<List<StudentDto>>> GetAllAsync([FromQuery] PaginationDto? model) {
         return await _mediator.Send(GetStudents.New(model ?? new()));
     }
 
-    [HttpGet("CalculateAverageScore/{nationalCode}")]
-    public async Task<Result<StudentMeanScoreDto>> CalculateAverageScoreAsync(string nationalCode) {
+    [HttpGet("GetAverageScore/{nationalCode}")]
+    public async Task<Result<StudentMeanScoreDto>> GetAverageScoreAsync(string nationalCode) {
         return await _mediator.Send(new GetStudentMeanScore(nationalCode));
+    }
+
+    [HttpGet("GetStudentsAverageScore")]
+    public async Task<Result<List<StudentMeanScoreDto>>> GetStudentsAverageScoreAsync(
+        [FromQuery] PaginationDto model , bool isDescending = true) {
+        return await _mediator.Send(GetStudentsMeanScore.New(model ?? new() , isDescending));
     }
 
     [HttpPost("Create")]
     public async Task<Result> CreateAsync([FromBody] StudentDto model) {
         return await ValidationResult<StudentDtoValidator , StudentDto , Create>(model);
     }
-
-
-
 }
