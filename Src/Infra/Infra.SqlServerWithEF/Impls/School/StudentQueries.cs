@@ -8,16 +8,20 @@ namespace Infra.SqlServerWithEF.Impls.School;
 internal sealed class StudentQueries(AppDbContext _dbContext) : IStudentQueries {
     public async Task<List<Student>> GetAllAsync(PaginationDto model)
         => model.UsePagination ?
-            await _dbContext.Students.Skip(( model.PageNumber - 1 ) * model.PageSize)
-                .Take(model.PageSize)
-                .ToListAsync() :
-            await _dbContext.Students.ToListAsync();
+        await _dbContext.Students
+            .Include(Student => Student.Exams)
+            .Skip(( model.PageNumber - 1 ) * model.PageSize)
+            .Take(model.PageSize)
+            .ToListAsync() :
+        await _dbContext.Students
+            .Include(Student => Student.Exams)
+            .ToListAsync();
 
     public async Task<Student?> GetByIdAsync(ulong id) {
         return await _dbContext.Students.FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<Student?> GetByNationalCodeAsync(string nationalCode) {
-        return await _dbContext.Students.FirstOrDefaultAsync(x => x.NationalCode == nationalCode);
+        return await _dbContext.Students.Include(x=>x.Exams).FirstOrDefaultAsync(x => x.NationalCode == nationalCode);
     }
 }
