@@ -7,7 +7,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddInfraLayerServices();
+await builder.Services.AddInfraLayerServices();
 builder.Services.AddMediatR(config => {
     config.RegisterServicesFromAssemblies(
         typeof(AppsSchoolAssembly).Assembly
