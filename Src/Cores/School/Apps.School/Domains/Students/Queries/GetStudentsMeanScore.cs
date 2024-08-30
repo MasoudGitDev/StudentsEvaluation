@@ -1,7 +1,8 @@
-﻿using Apps.School.Constants;
-using Domains.School.Abstractions;
+﻿using Domains.School.Abstractions;
 using Domains.School.Shared.Extensions;
+using Domains.School.Student.Aggregate;
 using MediatR;
+using Shared.Files.Constants;
 using Shared.Files.DTOs;
 using Shared.Files.Models;
 
@@ -16,20 +17,38 @@ public sealed record GetStudentsMeanScore(PaginationDto PaginationModel , bool I
 internal sealed class GetStudentsMeanScoreHandler(ISchoolUOW _unitOfWork)
     : SchoolRequestHandler<GetStudentsMeanScore , Result<List<StudentMeanScoreDto>>>(_unitOfWork.MustHasValue()) {
     public override async Task<Result<List<StudentMeanScoreDto>>> Handle(GetStudentsMeanScore request , CancellationToken cancellationToken)
-        => SuccessListResult(nameof(QueryPropertyNames.StudentMeanScores) ,
-            await CalculateStudentsAverageScoreAsync(request.PaginationModel , request.IsDescending));
+        => await ListResultAsync(request.PaginationModel , request.IsDescending);
 
-    private async Task<List<StudentMeanScoreDto>> CalculateStudentsAverageScoreAsync(
-        PaginationDto paginationModel ,
-        bool isDescending) {
+    //===================privates
+    private async Task<Result<List<StudentMeanScoreDto>>> ListResultAsync(PaginationDto paginationModel , bool isDescending) {
         var allStudents = await _unitOfWork.Queries.Students.GetAllAsync(paginationModel);
-        var studentMeanScores = await Task.WhenAll(allStudents.Select(async student =>
-        {
-            var averageScore = (await GetStudentExamsAsync(student.Id)).Average(x => x.Score);
-            return new StudentMeanScoreDto(student.FirstName, student.LastName, student.NationalCode, averageScore);
-        }));
+        List<StudentMeanScoreDto> studentMeanScores = CalculateStudentsAverageScore(allStudents ,isDescending );
+        return CheckItemsCount(allStudents.Count , studentMeanScores.Count , studentMeanScores);
+
+    }
+    private Result<List<StudentMeanScoreDto>> CheckItemsCount(int total ,
+        int calculatedScores ,
+        List<StudentMeanScoreDto> items) {
+        string message = string.Format(MessageResults.Students_Average_Scores , calculatedScores , total);
+        return calculatedScores == total ?
+            Result<List<StudentMeanScoreDto>>.Success(message , items) :
+            Result<List<StudentMeanScoreDto>>.Warning(message , items);
+    }
+
+    private List<StudentMeanScoreDto> CalculateStudentsAverageScore(List<Student> allStudents ,
+        bool isDescending) {
+
+        List<StudentMeanScoreDto>  studentsWithMeanScores = [];
+        foreach(var student in allStudents) {
+            var result = CalculateStudentAverageScore(student);
+            if(!result.IsSuccessful) {
+                continue;
+            }
+            studentsWithMeanScores.Add(result.Model!);
+        }
+
         return isDescending ?
-            [.. studentMeanScores.OrderByDescending(dto => dto.AverageScore)] :
-            [.. studentMeanScores.OrderBy(dto => dto.AverageScore)];
+            [.. studentsWithMeanScores.OrderByDescending(dto => dto.AverageScore)] :
+            [.. studentsWithMeanScores.OrderBy(dto => dto.AverageScore)];
     }
 }
