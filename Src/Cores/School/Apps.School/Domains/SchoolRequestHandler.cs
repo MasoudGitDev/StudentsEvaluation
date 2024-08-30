@@ -17,17 +17,16 @@ internal abstract class SchoolRequestHandler<TRequest, TResult>(ISchoolUOW _unit
     public abstract Task<TResult> Handle(TRequest request , CancellationToken cancellationToken);
 
     //Commands
-    protected async Task<Result> CreateAndSaveAsync<TEntity>(TEntity entity , string message)
-        where TEntity : class, new() {
-        await _unitOfWork.CreateAsync(entity);
-        await _unitOfWork.SaveChangesAsync();
-        return Result.Success(message);
-    }
     protected async Task<Result> CreateAndSaveAsync<TEntity>(TEntity entity , string messageFormat , params string[] names)
       where TEntity : class, new() {
-        await _unitOfWork.CreateAsync(entity);
-        await _unitOfWork.SaveChangesAsync();
-        return Result.Success(String.Format(messageFormat,names));
+        try {
+            await _unitOfWork.CreateAsync(entity);
+            await _unitOfWork.SaveChangesAsync();
+            return Result.Success(String.Format(messageFormat , names));
+        }
+        catch(Exception ex) {
+            return Result.Failed(ex.Message);
+        }
     }
 
     // Queries
