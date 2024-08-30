@@ -1,9 +1,8 @@
 ﻿namespace Shared.Files.DTOs;
 
-public record ExamResultDto(ulong StudentId ,
-    ulong TeacherId ,
-    ulong CourseId ,
+public record ExamResultDto(string TeacherPersonnelCode ,
+    string CourseCode ,
+    string StudentNationalCode ,
     float Score ,
     DateTime ExamDateTime
-    ) {
-}
+ );
