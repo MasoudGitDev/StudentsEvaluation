@@ -8,10 +8,10 @@ namespace Infra.SqlServerWithEF.Impls.School;
 internal class CourseQueries(AppDbContext _dbContext) : ICourseQueries {
     public async Task<List<Course>> GetAllAsync(PaginationDto model)
         => model.UsePagination ?
-            await _dbContext.Courses.Skip(( model.PageNumber - 1 ) * model.PageSize)
+            await _dbContext.Courses.Include(x=>x.Teacher).Skip(( model.PageNumber - 1 ) * model.PageSize)
                 .Take(model.PageSize)
                 .ToListAsync() :
-            await _dbContext.Courses.ToListAsync();
+            await _dbContext.Courses.Include(x => x.Teacher).ToListAsync();
 
 
     public async Task<Course?> GetByCodeAsync(string courseCode) {
