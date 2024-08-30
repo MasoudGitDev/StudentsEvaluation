@@ -4,8 +4,10 @@ using Domains.School.Course.Aggregate;
 using MediatR;
 using Shared.Files.Constants;
 using Shared.Files.DTOs;
+using Shared.Files.Exceptions;
 using Shared.Files.Extensions;
 using Shared.Files.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace Apps.School.Domains.Teachers.Queries;
 public sealed record GetTeacherPerformance(string PersonnelCode) : IRequest<Result<List<TeacherPerformanceDto>>> {
@@ -30,10 +32,15 @@ internal sealed class GetTeacherPerformanceHandler(ISchoolUOW _unitOfWork)
         return [.. ( await Task.WhenAll(performanceTasks) )];
     }
     private static Task<TeacherPerformanceDto> CalcAverageCourseScore(Course teacherCourse) {
-        var studentsScore = (teacherCourse.Students.Select((x)=> x.Student.Exams.Average(x => x.Score)));
-        return Task.FromResult(new TeacherPerformanceDto(teacherCourse.Code ,
-            teacherCourse.Name ,
-            studentsScore.Count() ,
-            studentsScore.Average()));
+        try {
+            var studentsScore = (teacherCourse.Students.Select((x)=> x.Student.Exams.Average(x => x.Score)));
+            return Task.FromResult(new TeacherPerformanceDto(teacherCourse.Code ,
+                teacherCourse.Name ,
+                studentsScore.Count() ,
+                studentsScore.Average()));
+        }
+        catch(Exception ex) {
+            throw new CustomException("CalcAverageCourseScoreError" , ex.Message);
+        }
     }
 }
