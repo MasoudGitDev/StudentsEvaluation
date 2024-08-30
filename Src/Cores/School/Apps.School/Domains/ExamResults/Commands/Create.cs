@@ -12,7 +12,7 @@ public sealed record Create(string TeacherPersonnelCode ,
     string StudentNationalCode ,
     float Score ,
     DateTime ExamDateTime
-    ) : IRequest<Result> {
+ ) : IRequest<Result> {
 }
 
 //==============handler
