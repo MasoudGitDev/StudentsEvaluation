@@ -30,9 +30,6 @@ public class GetStudentsMeanScoreHandlerTest {
         _mockUnitOfWork.Setup(x => x.Queries.Students.GetAllAsync(paginationModel))
             .ReturnsAsync(expectedStudents);
 
-        _mockUnitOfWork.Setup(x => x.Queries.Exams.GetStudentExamsAsync(It.IsAny<ulong>()))
-            .ReturnsAsync(exams);
-
         //Act
         var result = await _handler.Handle(request,default);
 
@@ -43,8 +40,7 @@ public class GetStudentsMeanScoreHandlerTest {
         var firstScore = result.Model!.First().AverageScore;
         var lastScore = result.Model!.Last().AverageScore;
         firstScore.Should().BeGreaterThanOrEqualTo(lastScore); // Descending order
-        _mockUnitOfWork.Verify(x => x.Queries.Exams.GetStudentExamsAsync(It.IsAny<ulong>()) ,
-            Times.Exactly(expectedStudents.Count));
+        _mockUnitOfWork.VerifyAll();
     }
 
 
@@ -58,9 +54,6 @@ public class GetStudentsMeanScoreHandlerTest {
         _mockUnitOfWork.Setup(x => x.Queries.Students.GetAllAsync(paginationModel))
             .ReturnsAsync(students);
 
-        _mockUnitOfWork.Setup(x => x.Queries.Exams.GetStudentExamsAsync(It.IsAny<ulong>()))
-            .ReturnsAsync(exams);
-
         //Act
         var result = await _handler.Handle(request,default);
 
@@ -71,8 +64,7 @@ public class GetStudentsMeanScoreHandlerTest {
         var firstScore = result.Model!.First().AverageScore;
         var lastScore = result.Model!.Last().AverageScore;
         firstScore.Should().BeGreaterThanOrEqualTo(lastScore); // Descending order
-        _mockUnitOfWork.Verify(x => x.Queries.Exams.GetStudentExamsAsync(It.IsAny<ulong>()) ,
-            Times.Exactly(students.Count));
+        _mockUnitOfWork.VerifyAll();
     }
 
 

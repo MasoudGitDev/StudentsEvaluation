@@ -27,10 +27,8 @@ public class GetStudentMeanScoreHandlerTest {
         Student student = Student.New("Student_FN_1" , "Student_LN_1" , request.NationalCode);
         _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.NationalCode))
             .ReturnsAsync(student);
+        student.Exams = CreateStudentExamResults(student.Id);
 
-        List<ExamResult> expectedExams = CreateFakeExamResult(student.Id);
-        _unitOfWork.Setup(x => x.Queries.Exams.GetStudentExamsAsync(student.Id))
-            .ReturnsAsync(expectedExams);
         float expectedAveScore = 17.5f;
 
         //Act
@@ -60,7 +58,7 @@ public class GetStudentMeanScoreHandlerTest {
     }
 
     //====================
-    private static List<ExamResult> CreateFakeExamResult(ulong studentId) {
+    private static List<ExamResult> CreateStudentExamResults(ulong studentId) {
         List<ExamResult> examResults = [];
         ulong courseId_1 = 1;
         for(int i = 0 ; i < 10 ; i++) {
