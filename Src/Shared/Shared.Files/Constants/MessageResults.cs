@@ -20,4 +20,7 @@ public static class MessageResults {
     public const string CreateCourse = "The new course with code: <{0}> has been created successfully.";
     public const string FoundCourse = "A course with code: <{0}> already exists.";
     public const string NotFoundCourse = "The course with code : <{0}> not found.";
+
+    // other
+    public const string Students_Average_Scores =  "Average scores is calculated for ({0}) Of ({1}) students.";
 }
