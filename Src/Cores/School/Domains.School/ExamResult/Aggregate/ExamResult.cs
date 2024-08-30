@@ -1,6 +1,5 @@
 ﻿using CourseModel = Domains.School.Course.Aggregate.Course;
 using StudentModel = Domains.School.Student.Aggregate.Student;
-using TeacherModel = Domains.School.Teacher.Aggregate.Teacher;
 
 namespace Domains.School.ExamResult.Aggregate;
 public partial class ExamResult {
@@ -17,5 +16,6 @@ public partial class ExamResult {
     public DateTime CreatedAt { get; private set; } = DateTime.UtcNow;
 
     //===============
-    public StudentModel Student { get; private set; }
+    public StudentModel Student { get; set; }
+    public CourseModel Course { get; set; }
 }
