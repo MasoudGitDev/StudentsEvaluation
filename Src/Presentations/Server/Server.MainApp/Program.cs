@@ -18,6 +18,7 @@ builder.Services.AddMediatR(config => {
 builder.Services.AddTransient(service => new StudentDtoValidator());
 builder.Services.AddTransient(service => new CourseDtoValidator());
 builder.Services.AddTransient(service => new TeacherDtoValidator());
+builder.Services.AddTransient(service => new ExamResultDtoValidator());
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -27,8 +28,7 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
+if(app.Environment.IsDevelopment()) {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
