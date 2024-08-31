@@ -4,6 +4,7 @@ using Domains.School.ExamResult.Aggregate;
 using Domains.School.Student.Aggregate;
 using FluentAssertions;
 using Moq;
+using Shared.Files.Constants;
 using Shared.Files.DTOs;
 using Shared.Files.Models;
 
@@ -27,7 +28,7 @@ public class GetStudentsMeanScoreHandlerTest {
 
         var (students, exams) = CreateStudents();
         var expectedStudents = students.Skip((pageNumber-1) * pageSize).Take(pageSize).ToList();
-        _mockUnitOfWork.Setup(x => x.Queries.Students.GetAllAsync(paginationModel))
+        _mockUnitOfWork.Setup(x => x.Queries.Students.GetAllAsync(paginationModel, LoadingType.Eager))
             .ReturnsAsync(expectedStudents);
 
         //Act
@@ -51,7 +52,7 @@ public class GetStudentsMeanScoreHandlerTest {
         GetStudentsMeanScore request = new(paginationModel,true);
 
         var (students, exams) = CreateStudents();
-        _mockUnitOfWork.Setup(x => x.Queries.Students.GetAllAsync(paginationModel))
+        _mockUnitOfWork.Setup(x => x.Queries.Students.GetAllAsync(paginationModel, LoadingType.Eager))
             .ReturnsAsync(students);
 
         //Act

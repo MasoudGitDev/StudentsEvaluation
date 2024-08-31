@@ -3,6 +3,7 @@ using Domains.School.Abstractions;
 using Domains.School.Student.Aggregate;
 using FluentAssertions;
 using Moq;
+using Shared.Files.Constants;
 using Shared.Files.DTOs;
 using Shared.Files.Models;
 
@@ -30,7 +31,7 @@ public class GetStudentsHandlerTest {
         List<Student> expectedStudents = students
             .Skip((pageNumber-1)*pageNumber).Take(pageSize).ToList();
 
-        _unitOfWork.Setup(x => x.Queries.Students.GetAllAsync(paginationDto))
+        _unitOfWork.Setup(x => x.Queries.Students.GetAllAsync(paginationDto,LoadingType.Lazy))
             .ReturnsAsync(expectedStudents);
 
         //Act
@@ -48,7 +49,7 @@ public class GetStudentsHandlerTest {
         GetStudents request = GetStudents.New(new(false));
 
         List<Student> students = CreateFakeStudents() ;
-        _unitOfWork.Setup(x => x.Queries.Students.GetAllAsync(request.Model))
+        _unitOfWork.Setup(x => x.Queries.Students.GetAllAsync(request.Model, LoadingType.Lazy))
             .ReturnsAsync(students);
 
         //Act

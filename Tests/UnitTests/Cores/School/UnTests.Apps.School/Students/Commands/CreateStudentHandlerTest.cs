@@ -21,7 +21,7 @@ public class CreateStudentHandlerTest {
         Create request = new("Student_FN_1" , "Student_LN_1" , "Student_NC_1");
 
 
-        _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.NationalCode))
+        _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.NationalCode, LoadingType.Lazy))
             .ReturnsAsync((Student?) null);
 
         Student student = Student.New(request.FirstName, request.LastName,request.NationalCode);
@@ -44,7 +44,7 @@ public class CreateStudentHandlerTest {
         Create request = new("Student_FN_1" , "Student_LN_1" , "Student_NC_1");
         Student student = Student.New(request.FirstName, request.LastName,request.NationalCode);
 
-        _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.NationalCode))
+        _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.NationalCode,LoadingType.Lazy))
             .ReturnsAsync(student);
 
         //Act

@@ -21,7 +21,7 @@ internal sealed class GetStudentsMeanScoreHandler(ISchoolUOW _unitOfWork)
 
     //===================privates
     private async Task<Result<List<StudentMeanScoreDto>>> ListResultAsync(PaginationDto paginationModel , bool isDescending) {
-        var allStudents = await _unitOfWork.Queries.Students.GetAllAsync(paginationModel);
+        var allStudents = await _unitOfWork.Queries.Students.GetAllAsync(paginationModel,LoadingType.Eager);
         List<StudentMeanScoreDto> studentMeanScores = CalculateStudentsAverageScore(allStudents ,isDescending );
         return CheckItemsCount(allStudents.Count , studentMeanScores.Count , studentMeanScores);
 

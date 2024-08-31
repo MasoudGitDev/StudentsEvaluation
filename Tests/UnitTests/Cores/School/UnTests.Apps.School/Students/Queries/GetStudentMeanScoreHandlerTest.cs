@@ -25,7 +25,7 @@ public class GetStudentMeanScoreHandlerTest {
         var request = new GetStudentMeanScore("testNationCode");
 
         Student student = Student.New("Student_FN_1" , "Student_LN_1" , request.NationalCode);
-        _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.NationalCode))
+        _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.NationalCode,LoadingType.Eager))
             .ReturnsAsync(student);
         student.Exams = CreateStudentExamResults(student.Id);
 
@@ -45,7 +45,7 @@ public class GetStudentMeanScoreHandlerTest {
         //Arrange
         var request = new GetStudentMeanScore("testNationCode");
 
-        _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.NationalCode))
+        _unitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.NationalCode,LoadingType.Eager))
             .ReturnsAsync((Student?) null);
 
         //Act

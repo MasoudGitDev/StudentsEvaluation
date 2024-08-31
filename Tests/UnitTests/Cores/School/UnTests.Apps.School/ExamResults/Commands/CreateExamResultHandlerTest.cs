@@ -35,7 +35,7 @@ public class CreateExamResultHandlerTest {
             .ReturnsAsync(course);
 
         Student student = Student.New("Student_FN_1", "Student_LN_1" , "Student_NC_1");
-        _mockUnitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(student.NationalCode))
+        _mockUnitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(student.NationalCode,LoadingType.Lazy))
             .ReturnsAsync(student);
 
         _mockUnitOfWork.Setup(x => x.Queries.Exams.HadStudentAnyExamAsync(student.Id , course.Id , request.ExamDateTime))
@@ -105,7 +105,7 @@ public class CreateExamResultHandlerTest {
         exception.Description.Should().BeEquivalentTo(
             String.Format(MessageResults.NotFoundTeacher , request.TeacherPersonnelCode));
         _mockUnitOfWork.Verify(x => x.Queries.Courses.GetByCodeAsync(It.IsAny<string>()) , Times.Never);
-        _mockUnitOfWork.Verify(x => x.Queries.Students.GetByNationalCodeAsync(It.IsAny<string>()) , Times.Never);
+        _mockUnitOfWork.Verify(x => x.Queries.Students.GetByNationalCodeAsync(It.IsAny<string>(),LoadingType.Lazy) , Times.Never);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync() , Times.Never);
     }
 
@@ -129,7 +129,7 @@ public class CreateExamResultHandlerTest {
         exception.Description.Should().BeEquivalentTo(
             String.Format(MessageResults.NotFoundCourse , request.CourseCode));
 
-        _mockUnitOfWork.Verify(x => x.Queries.Students.GetByNationalCodeAsync(It.IsAny<string>()) , Times.Never);
+        _mockUnitOfWork.Verify(x => x.Queries.Students.GetByNationalCodeAsync(It.IsAny<string>(), LoadingType.Lazy) , Times.Never);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync() , Times.Never);
     }
 
@@ -146,7 +146,7 @@ public class CreateExamResultHandlerTest {
         _mockUnitOfWork.Setup(x => x.Queries.Courses.GetByCodeAsync(course.Code))
             .ReturnsAsync(course);
 
-        _mockUnitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.StudentNationalCode))
+        _mockUnitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.StudentNationalCode,LoadingType.Lazy))
             .ReturnsAsync((Student?) null);
 
         //Act
@@ -177,7 +177,7 @@ public class CreateExamResultHandlerTest {
             .ReturnsAsync(course);
 
         Student student = Student.New("Student_FN_1", "Student_LN_1" , "Student_NC_1");
-        _mockUnitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(student.NationalCode))
+        _mockUnitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(student.NationalCode, LoadingType.Lazy))
             .ReturnsAsync(student);
 
         ExamResult examResult = ExamResult.New(course.Id,teacher.Id,student.Id,_lessTheNowDateTime, 18);

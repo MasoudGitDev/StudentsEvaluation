@@ -13,7 +13,7 @@ public sealed record GetStudentMeanScore(string NationalCode) : IRequest<Result<
 internal sealed class GetStudentMeanScoreHandler(ISchoolUOW _unitOfWork)
     : SchoolRequestHandler<GetStudentMeanScore , Result<StudentMeanScoreDto>>(_unitOfWork) {
     public override async Task<Result<StudentMeanScoreDto>> Handle(GetStudentMeanScore request , CancellationToken cancellationToken) {
-        var student = ( await FindStudentByCodeAsync(request.NationalCode) )
+        var student = ( await FindStudentByCodeAsync(request.NationalCode,LoadingType.Eager) )
             .ThrowIfNull(MessageResults.NotFoundStudent , request.NationalCode);
 
         return CalculateStudentAverageScore(student);
