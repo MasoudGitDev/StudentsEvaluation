@@ -4,6 +4,7 @@ using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Files.DTOs;
+using Shared.Files.Extensions;
 using Shared.Files.Models;
 
 namespace Server.MainApp.Controllers;
@@ -15,7 +16,7 @@ public class CoursesController(IMediator _mediator , IServiceProvider _servicePr
 
     [HttpGet("All")]
     public async Task<Result<List<CourseDto>>> GetAllAsync([FromQuery] PaginationDto? model) {
-        return await _mediator.Send(GetCourses.New(model ?? new()));
+        return await _mediator.Send(GetCourses.New(model.Normalize()));
     }
 
     [HttpPost("Create")]

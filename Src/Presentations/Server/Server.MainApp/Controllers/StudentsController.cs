@@ -3,6 +3,7 @@ using Apps.School.Domains.Students.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Files.DTOs;
+using Shared.Files.Extensions;
 using Shared.Files.Models;
 using Shared.Files.Validators.School;
 
@@ -14,7 +15,7 @@ public class StudentsController(IMediator _mediator , IServiceProvider _serviceP
 
     [HttpGet("GetAll")]
     public async Task<Result<List<StudentDto>>> GetAllAsync([FromQuery] PaginationDto? model) {
-        return await _mediator.Send(GetStudents.New(model ?? new()));
+        return await _mediator.Send(GetStudents.New(model.Normalize()));
     }
 
     [HttpGet("GetAverageScore/{nationalCode}")]
@@ -25,7 +26,7 @@ public class StudentsController(IMediator _mediator , IServiceProvider _serviceP
     [HttpGet("GetStudentsAverageScore")]
     public async Task<Result<List<StudentMeanScoreDto>>> GetStudentsAverageScoreAsync(
         [FromQuery] PaginationDto model , bool isDescending = true) {
-        return await _mediator.Send(GetStudentsMeanScore.New(model ?? new() , isDescending));
+        return await _mediator.Send(GetStudentsMeanScore.New(model.Normalize() , isDescending));
     }
 
     [HttpPost("Create")]
