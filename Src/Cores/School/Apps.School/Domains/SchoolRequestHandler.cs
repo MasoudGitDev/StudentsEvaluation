@@ -67,9 +67,6 @@ internal abstract class SchoolRequestHandler<TRequest, TResult>(ISchoolUOW _unit
     protected async Task<Teacher?> FindTeacherByCodeAsync(string personnelCode)
         => await _unitOfWork.Queries.Teachers.GetByPersonnelCodeAsync(personnelCode);
 
-    protected async Task<ExamResult?> HadStudentAnyExamAsync(ulong studentId , ulong courseId , DateTime examDateTime)
-        => await _unitOfWork.Queries.Exams.HadStudentAnyExamAsync(studentId , courseId , examDateTime);
-
     // Results
     protected static Result<List<T>> SuccessListResult<T>(string propertyName , List<T> items) {
        return items.Count > 0 ? 
