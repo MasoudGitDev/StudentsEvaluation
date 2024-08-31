@@ -37,4 +37,8 @@ public static class ModelExtensions {
         }
         return dateTime;
     }
+
+    public static string ToFormat(this string text , params string[] args) { 
+        return String.Format(text , args);
+    }
 }
