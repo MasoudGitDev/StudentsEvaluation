@@ -1,10 +1,11 @@
 ﻿using Apps.School.Domains.Teachers.Commands;
 using Apps.School.Domains.Teachers.Queries;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Files.DTOs;
+using Shared.Files.Extensions;
 using Shared.Files.Models;
+using Shared.Files.Validators.School;
 
 namespace Server.MainApp.Controllers;
 [Route("api/[controller]")]
@@ -14,7 +15,7 @@ public class TeachersController(IMediator _mediator , IServiceProvider _serviceP
 
     [HttpGet("GetAll")]
     public async Task<Result<List<TeacherDto>>> GetAllAsync([FromQuery] PaginationDto model) {
-        return await _mediator.Send(GetTeachers.New(model ?? new()));
+        return await _mediator.Send(GetTeachers.New(model.Normalize()));
     }
 
     [HttpGet("GetTeacherPerformance/{personnelCode}")]
@@ -24,6 +25,6 @@ public class TeachersController(IMediator _mediator , IServiceProvider _serviceP
 
     [HttpPost("Create")]
     public async Task<Result> CreateAsync([FromBody] TeacherDto model) {
-        return await _mediator.Send(model.Adapt<Create>());
+        return await ValidationResult<TeacherDtoValidator , TeacherDto , Create>(model);
     }
 }
