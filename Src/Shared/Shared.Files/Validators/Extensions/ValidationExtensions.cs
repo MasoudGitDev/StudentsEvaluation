@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
+using Shared.Files.Extensions;
 using Shared.Files.Models;
 
 namespace Shared.Files.Validators.Extensions;
@@ -21,5 +22,13 @@ public static class ValidationExtensions {
             .NotEmpty().WithMessage("Please enter a valid {PropertyName}.")
             .MinimumLength(min).WithMessage("Please enter at least " + min + " valid characters for {PropertyName}")
             .MaximumLength(max).WithMessage("The maximum length of {PropertyName} is" + max + ".");
-    } 
+    }
+    public static IRuleBuilderOptions<T , float> WithClosedRange<T>(
+      this IRuleBuilder<T , float> ruleBuilder ,
+      int min = 3 ,
+      int max = 50) {
+        return ruleBuilder
+            .GreaterThanOrEqualTo(min).WithMessage("The number must be greater than or equal to {0}".ToFormat(min.ToString()))
+            .LessThanOrEqualTo(max).WithMessage("The number must be less than or equal to {0}".ToFormat(max.ToString()));
+    }
 }
