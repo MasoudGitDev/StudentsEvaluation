@@ -1,6 +1,5 @@
 ﻿using Domains.School.Abstractions;
 using Domains.School.Course.Repo;
-using Domains.School.ExamResult.Repo;
 using Domains.School.Shared.Abstractions;
 using Domains.School.Student.Repo;
 using Domains.School.Teacher.Repo;
@@ -10,7 +9,6 @@ using Infra.SqlServerWithEF.Impls.School;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Shared.Files.Extensions;
 
 namespace Infra.SqlServerWithEF.Extensions;
 public static class ServiceCollectionExtensions {
@@ -27,7 +25,6 @@ public static class ServiceCollectionExtensions {
         services.AddScoped<IStudentQueries , StudentQueries>();
         services.AddScoped<ITeacherQueries , TeacherQueries>();
         services.AddScoped<ICourseQueries , CourseQueries>();
-        services.AddScoped<IExamResultQueries , ExamResultQueries>();
 
         services.AddScoped<ISchoolQueries , SchoolQueries>();
         services.AddScoped<ISchoolUOW , SchoolUnitOfWork>();

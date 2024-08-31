@@ -51,10 +51,6 @@ internal abstract class SchoolRequestHandler<TRequest, TResult>(ISchoolUOW _unit
     protected async Task<List<StudentDto>> GetStudentDTOsAsync(PaginationDto model,LoadingType loadingType = LoadingType.Lazy)
         => (await _unitOfWork.Queries.Students.GetAllAsync(model,loadingType)).Adapt<List<StudentDto>>();
 
-    protected async Task<List<ExamResult>> GetStudentExamsAsync(ulong studentId)
-        => await _unitOfWork.Queries.Exams.GetStudentExamsAsync(studentId);
-
-
     protected async Task<Student?> FindStudentByCodeAsync(string nationalCode , LoadingType loadingType = LoadingType.Lazy)
         => await _unitOfWork.Queries.Students.GetByNationalCodeAsync(nationalCode ,loadingType);
 
