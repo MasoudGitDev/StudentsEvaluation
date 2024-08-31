@@ -19,13 +19,4 @@ internal class ExamResultQueries(AppDbContext _dbContext) : IExamResultQueries {
             .Where(x=>x.StudentId== studentId)
             .ToListAsync();
     }
-
-    public async Task<ExamResult?> HadStudentAnyExamAsync(ulong studentId , ulong courseId , DateTime ExamDateTime) {
-        return await _dbContext.ExamResults
-            .AsNoTracking()
-            .FirstOrDefaultAsync(x => 
-                x.StudentId == studentId &&
-                x.CourseId == courseId &&
-                x.ExamDateTime.Date == ExamDateTime.Date);
-    }
 }
