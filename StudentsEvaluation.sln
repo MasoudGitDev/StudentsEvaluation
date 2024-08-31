@@ -37,6 +37,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "School", "School", "{F57951
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnTests.Apps.School", "Tests\UnitTests\Cores\School\UnTests.Apps.School\UnTests.Apps.School.csproj", "{065C2897-61FE-4B8B-866D-BA081E21B78F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infra", "Infra", "{5827B2C8-FAA2-4CF2-8D50-F44E51019F39}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UNTests.Infra.SqlServerWithEF", "Tests\UnitTests\Infra\UNTests.Infra.SqlServerWithEF\UNTests.Infra.SqlServerWithEF.csproj", "{AAECCDC4-2600-435C-9E1D-BD2F8FCBBD14}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -67,6 +71,10 @@ Global
 		{065C2897-61FE-4B8B-866D-BA081E21B78F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{065C2897-61FE-4B8B-866D-BA081E21B78F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{065C2897-61FE-4B8B-866D-BA081E21B78F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AAECCDC4-2600-435C-9E1D-BD2F8FCBBD14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAECCDC4-2600-435C-9E1D-BD2F8FCBBD14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAECCDC4-2600-435C-9E1D-BD2F8FCBBD14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAECCDC4-2600-435C-9E1D-BD2F8FCBBD14}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -87,6 +95,8 @@ Global
 		{8DA3201D-326F-4B8A-9AB3-D815409C74AD} = {BCDAC15E-A337-4AC0-994A-2F982E9CA21D}
 		{F57951E8-4555-46EC-9C0C-3366E077C62B} = {8DA3201D-326F-4B8A-9AB3-D815409C74AD}
 		{065C2897-61FE-4B8B-866D-BA081E21B78F} = {F57951E8-4555-46EC-9C0C-3366E077C62B}
+		{5827B2C8-FAA2-4CF2-8D50-F44E51019F39} = {BCDAC15E-A337-4AC0-994A-2F982E9CA21D}
+		{AAECCDC4-2600-435C-9E1D-BD2F8FCBBD14} = {5827B2C8-FAA2-4CF2-8D50-F44E51019F39}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CA959EFB-FB6B-461D-BA08-745D2448D1FF}
