@@ -35,11 +35,9 @@ public class CreateExamResultHandlerTest {
             .ReturnsAsync(course);
 
         Student student = Student.New("Student_FN_1", "Student_LN_1" , "Student_NC_1");
-        _mockUnitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(student.NationalCode,LoadingType.Lazy))
+        student.Exams = [];
+        _mockUnitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(student.NationalCode,LoadingType.Eager))
             .ReturnsAsync(student);
-
-        _mockUnitOfWork.Setup(x => x.Queries.Exams.HadStudentAnyExamAsync(student.Id , course.Id , request.ExamDateTime))
-            .ReturnsAsync((ExamResult?) null);
 
         //Act
         var result = await _handler.Handle(request,default);
@@ -47,7 +45,7 @@ public class CreateExamResultHandlerTest {
         //Assert
         result.Should()
             .NotBeNull().And
-            .BeEquivalentTo(Result.Success(String.Format(MessageResults.CreateExamResult , string.Empty)));
+            .BeEquivalentTo(Result.Success(MessageResults.CreateExamResult));
         request.Score.Should().BeInRange(0 , 20);
         request.ExamDateTime.Should().BeBefore(DateTime.UtcNow);
         _mockUnitOfWork.VerifyAll();
@@ -105,7 +103,7 @@ public class CreateExamResultHandlerTest {
         exception.Description.Should().BeEquivalentTo(
             String.Format(MessageResults.NotFoundTeacher , request.TeacherPersonnelCode));
         _mockUnitOfWork.Verify(x => x.Queries.Courses.GetByCodeAsync(It.IsAny<string>()) , Times.Never);
-        _mockUnitOfWork.Verify(x => x.Queries.Students.GetByNationalCodeAsync(It.IsAny<string>(),LoadingType.Lazy) , Times.Never);
+        _mockUnitOfWork.Verify(x => x.Queries.Students.GetByNationalCodeAsync(It.IsAny<string>(),LoadingType.Eager) , Times.Never);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync() , Times.Never);
     }
 
@@ -129,7 +127,7 @@ public class CreateExamResultHandlerTest {
         exception.Description.Should().BeEquivalentTo(
             String.Format(MessageResults.NotFoundCourse , request.CourseCode));
 
-        _mockUnitOfWork.Verify(x => x.Queries.Students.GetByNationalCodeAsync(It.IsAny<string>(), LoadingType.Lazy) , Times.Never);
+        _mockUnitOfWork.Verify(x => x.Queries.Students.GetByNationalCodeAsync(It.IsAny<string>(), LoadingType.Eager) , Times.Never);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync() , Times.Never);
     }
 
@@ -146,7 +144,7 @@ public class CreateExamResultHandlerTest {
         _mockUnitOfWork.Setup(x => x.Queries.Courses.GetByCodeAsync(course.Code))
             .ReturnsAsync(course);
 
-        _mockUnitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.StudentNationalCode,LoadingType.Lazy))
+        _mockUnitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(request.StudentNationalCode,LoadingType.Eager))
             .ReturnsAsync((Student?) null);
 
         //Act
@@ -156,13 +154,8 @@ public class CreateExamResultHandlerTest {
         var exception = await Assert.ThrowsAsync<CustomException>(action);
         exception.Description.Should().BeEquivalentTo(
             String.Format(MessageResults.NotFoundStudent , request.StudentNationalCode));
-        _mockUnitOfWork.Verify(x => x.Queries.Exams.HadStudentAnyExamAsync(It.IsAny<ulong>() ,
-            course.Id ,
-            request.ExamDateTime
-        ) , Times.Never);
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync() , Times.Never);
     }
-
     [Fact]
     public async Task Handle_Should_Throw_Exception_When_ExamResult_IsNotFollow_PerCourse_PerDay_For_Each_Student() {
         //Arrange
@@ -177,20 +170,18 @@ public class CreateExamResultHandlerTest {
             .ReturnsAsync(course);
 
         Student student = Student.New("Student_FN_1", "Student_LN_1" , "Student_NC_1");
-        _mockUnitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(student.NationalCode, LoadingType.Lazy))
+        student.Exams = [
+            ExamResult.New(course.Id,teacher.Id,student.Id , request.ExamDateTime, 18)
+        ];
+        _mockUnitOfWork.Setup(x => x.Queries.Students.GetByNationalCodeAsync(student.NationalCode, LoadingType.Eager))
             .ReturnsAsync(student);
-
-        ExamResult examResult = ExamResult.New(course.Id,teacher.Id,student.Id,_lessTheNowDateTime, 18);
-        _mockUnitOfWork.Setup(x => x.Queries.Exams.HadStudentAnyExamAsync(student.Id , course.Id , _lessTheNowDateTime))
-            .ReturnsAsync(examResult);
 
         //Act
         var action = async() => await _handler.Handle(request,default);
 
         //Assert
         var exception = await Assert.ThrowsAsync<CustomException>(action);
-        exception.Description.Should().BeEquivalentTo(
-            String.Format(MessageResults.OneExamPerCoursePerDay , string.Empty));
+        exception.Description.Should().BeEquivalentTo(MessageResults.OneExamPerCoursePerDay);
 
         _mockUnitOfWork.Verify(x => x.SaveChangesAsync() , Times.Never);
     }
