@@ -1,5 +1,4 @@
-﻿using Domains.School.StudentCourse.Aggregate;
-using Domains.School.Teacher.Aggregate;
+﻿using Domains.School.Teacher.Aggregate;
 using Domains.School.Teacher.Repo;
 using Infra.SqlServerWithEF.Contexts;
 using Microsoft.EntityFrameworkCore;
