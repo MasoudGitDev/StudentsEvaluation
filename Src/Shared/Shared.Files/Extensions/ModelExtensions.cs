@@ -1,4 +1,5 @@
 ﻿using Shared.Files.Constants;
+using Shared.Files.DTOs;
 using Shared.Files.Exceptions;
 
 namespace Shared.Files.Extensions;
@@ -40,5 +41,18 @@ public static class ModelExtensions {
 
     public static string ToFormat(this string text , params string[] args) { 
         return String.Format(text , args);
+    }
+
+    public static PaginationDto Normalize(this PaginationDto? model) {
+        if(model is null) {
+            return new();
+        }
+        if(model.PageNumber <= 0) {
+            model = model with { PageNumber = 1 };
+        }
+        if(model.PageSize <= 0) {
+            model = model with { PageSize = 1 };
+        }
+        return model;
     }
 }
