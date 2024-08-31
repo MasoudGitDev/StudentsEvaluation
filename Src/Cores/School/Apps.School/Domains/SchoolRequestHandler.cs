@@ -71,9 +71,9 @@ internal abstract class SchoolRequestHandler<TRequest, TResult>(ISchoolUOW _unit
 
     // Results
     protected static Result<List<T>> SuccessListResult<T>(string propertyName , List<T> items) {
-        string message = items.Count > 0
-            ? $"{items.Count} {propertyName} found."
-            : $"There is no any {propertyName} !";
-        return Result<List<T>>.Success(message , items);
+       return items.Count > 0 ? 
+              Result<List<T>>.Success($"{items.Count} {propertyName} found." , items) :
+              Result<List<T>>.Warning($"There is no any {propertyName} !" , items);
+        
     }
 }

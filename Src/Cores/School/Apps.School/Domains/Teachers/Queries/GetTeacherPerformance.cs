@@ -22,7 +22,7 @@ internal sealed class GetTeacherPerformanceHandler(ISchoolUOW _unitOfWork)
         var findTeacher = (await FindTeacherByCodeAsync(request.PersonnelCode))
             .ThrowIfNull(MessageResults.NotFoundTeacher, request.PersonnelCode);
 
-        return SuccessListResult(nameof(QueryPropertyNames.Courses) ,
+        return SuccessListResult(nameof(QueryPropertyNames.TeacherPerformance) ,
             await CalculateEducationScoreAsync(findTeacher.Courses));
     }
 
