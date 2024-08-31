@@ -26,7 +26,7 @@ public class SchoolController(IMediator _mediator , IServiceProvider _servicePro
         where TValidator : AbstractValidator<TModel>
         where TDestinationModel : IRequest<Result> {
         var validator = (_serviceProvider.GetRequiredService<TValidator>()).ThrowIfNull(typeof(TValidator).Name);
-        ValidateModel(validator, model).ThrowIfFailure();
+        ValidateModel(validator , model).ThrowIfFailure();
         return await _mediator.Send(model.Adapt<TDestinationModel>());
     }
 }
