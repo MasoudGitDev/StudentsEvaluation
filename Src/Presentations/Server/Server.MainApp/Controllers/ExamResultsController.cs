@@ -1,9 +1,9 @@
 ﻿using Apps.School.Domains.ExamResults.Commands;
-using Mapster;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Shared.Files.DTOs;
 using Shared.Files.Models;
+using Shared.Files.Validators.School;
 
 namespace Server.MainApp.Controllers;
 
@@ -14,7 +14,7 @@ public class ExamResultsController(IMediator _mediator , IServiceProvider _servi
 
     [HttpPost("Create")]
     public async Task<Result> CreateAsync([FromBody] ExamResultDto model) {
-        return await _mediator.Send(model.Adapt<Create>());
+        return await ValidationResult<ExamResultDtoValidator , ExamResultDto , Create>(model);
     }
 
 }
