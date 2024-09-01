@@ -1,7 +1,6 @@
 ﻿using Domains.School.Abstractions;
 using Domains.School.ExamResult.Aggregate;
 using Domains.School.Student.Aggregate;
-using Domains.School.StudentCourse.Aggregate;
 using MediatR;
 using Shared.Files.Constants;
 using Shared.Files.Exceptions;
@@ -26,9 +25,8 @@ internal sealed class CreateExamResultHandler(ISchoolUOW _unitOfWork)
         examDateTime.MustDateTimeLessThanNow();
         score.MustScoreBeInRange();
 
-        (ulong teacherId, ulong courseId, ulong studentId) = await CheckObjectsExistenceAsync(personnelCode , courseCode , nationalCode , examDateTime);
-        var studentCourse = StudentCourse.New(studentId, courseId);
-        await _unitOfWork.CreateAsync(studentCourse);
+        (ulong teacherId, ulong courseId, ulong studentId) =
+            await CheckObjectsExistenceAsync(personnelCode , courseCode , nationalCode , examDateTime);
 
         return await CreateAndSaveAsync(ExamResult.New(courseId , teacherId , studentId , examDateTime , score) ,
             MessageResults.CreateExamResult , []);
