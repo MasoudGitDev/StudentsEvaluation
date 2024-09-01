@@ -1,4 +1,5 @@
-﻿using CourseModel = Domains.School.Course.Aggregate.Course;
+﻿using StudentModel = Domains.School.Student.Aggregate.Student;
+using CourseModel = Domains.School.Course.Aggregate.Course;
 
 namespace Domains.School.ExamResult.Aggregate;
 public partial class ExamResult {
@@ -33,4 +34,19 @@ public partial class ExamResult {
            Score = score ,
            Course = course
        };
+
+    public static ExamResult New(
+    CourseModel course ,
+    StudentModel student ,
+    DateTime examDate ,
+    float score)
+    => new() {
+        CourseId = course.Id ,
+        TeacherId = course.TeacherId ,
+        StudentId = student.Id ,
+        ExamDateTime = examDate ,
+        Score = score ,
+        Course = course,
+        Student = student        
+    };
 }
