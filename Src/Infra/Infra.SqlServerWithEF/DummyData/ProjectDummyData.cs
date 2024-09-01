@@ -3,20 +3,22 @@ using Domains.School.Course.Aggregate;
 using Domains.School.ExamResult.Aggregate;
 using Domains.School.Student.Aggregate;
 using Domains.School.Teacher.Aggregate;
+using Infra.SqlServerWithEF.Contexts;
 using Shared.Files.Models;
 
 namespace Infra.SqlServerWithEF.DummyData;
 
-internal class ProjectDummyData(ISchoolUOW _unitOfWork) {
+internal class ProjectDummyData(ISchoolUOW _unitOfWork , AppDbContext _dbContext) {
 
 
     public async Task<Result> ExecuteAsync() {
         try {
-            var students = await GetOrCreateStudentsAsync();
-            var teachers = await GetOrCreateTeachersAsync();
+            var students = await GetOrCreateStudentsAsync(10);
+            var teachers = await GetOrCreateTeachersAsync(3);
             //=========
-          // var teachersCourses = await CreateTeachersCoursesAsync(teachers);
-            //await CreateAllExamResultsAsync(students, teachersCourses);
+            var courses = await GetOrCreateCoursesAsync(teachers);
+            var allExams = CreateExams(students , courses);
+            await CreateAllExamResultsIfNeededAsync(allExams);
 
             await _unitOfWork.SaveChangesAsync();
             return Result.Success("Ok");
@@ -27,23 +29,32 @@ internal class ProjectDummyData(ISchoolUOW _unitOfWork) {
     }
 
 
-    private async Task<List<Teacher>> GetOrCreateTeachersAsync() {
+    private async Task<List<Teacher>> GetOrCreateTeachersAsync(ulong teachersNumber = 3) {
         return await IsAnyTeachersAsync() ?
             await _unitOfWork.Queries.Teachers.GetAllAsync(new(false)) :
-            await CreateTeachersAsync(10);
+            await CreateTeachersAsync(teachersNumber);
     }
-    private async Task<List<Student>> GetOrCreateStudentsAsync() {
+    private async Task<List<Student>> GetOrCreateStudentsAsync(ulong studentsNumber = 10) {
         return await IsAnyStudentsAsync() ?
             await _unitOfWork.Queries.Students.GetAllAsync(new(false)) :
-            await CreateStudentsAsync(40);
+            await CreateStudentsAsync(studentsNumber);
     }
+
+    private async Task<List<Course>> GetOrCreateCoursesAsync(List<Teacher> teachers) {
+        var findCourses = await _unitOfWork.Queries.Courses.GetAllAsync(new(false));
+        if(findCourses.Count != 0) {
+            return findCourses;
+        }
+        return await CreateTeachersCoursesAsync(teachers);
+    }
+
 
 
     //==============================
-    private async Task<List<TModel>> CreateListAsync<TModel>(int count , Func<int , TModel> action)
+    private async Task<List<TModel>> CreateListAsync<TModel>(ulong count , Func<ulong , TModel> action)
         where TModel : class, new() {
         List<TModel> items = [];
-        for(int i = 1 ; i <= count ; i++) {
+        for(ulong i = 1 ; i <= count ; i++) {
             var model = action.Invoke(i);
             items.Add(model);
             await _unitOfWork.CreateAsync(model);
@@ -51,66 +62,70 @@ internal class ProjectDummyData(ISchoolUOW _unitOfWork) {
         return items;
     }
 
-    private async Task<List<Student>> CreateStudentsAsync(int count = 40)
+    private async Task<List<Student>> CreateStudentsAsync(ulong count)
        => await CreateListAsync(count ,
-           (i) => Student.New("Student_FName_" + i , "Student_LName_" + i , "Student_NCode_" + i));
+           (id) => Student.New($"Student_FName_{id}" , $"Student_LName_{id}" , $"Student_NCode_{id}"));
 
-    private async Task<List<Teacher>> CreateTeachersAsync(int count = 10)
+    private async Task<List<Teacher>> CreateTeachersAsync(ulong count)
           => await CreateListAsync(count ,
-              (i) => Teacher.New("Teacher_FName_" + i , "Teacher_LName_" + i , "Teacher_PCode_" + i));
+              (id) => Teacher.New($"Teacher_FName_{id}" , $"Teacher_LName_{id}" , $"Teacher_PCode_{id}"));
 
-    private async Task<List<Course>> CreateTeachersCoursesAsync(List<Teacher> teachers) { 
+    private async Task<List<Course>> CreateTeachersCoursesAsync(List<Teacher> teachers) {
         List<Course> allTeachersCourses = [];
         ulong mainCourseCounter = 1 ;
         foreach(var teacher in teachers) {
-            teacher.Courses = await CreateTeacherCourses(teacher , mainCourseCounter , 3);
-            mainCourseCounter += 3;
+            ulong courseCount = 2;
+            var courses = await CreateTeacherCourses(teacher , mainCourseCounter , courseCount);
+            teacher.Courses = courses;
+            mainCourseCounter += ( courseCount + 1 );
+            allTeachersCourses.AddRange(courses);
         }
         return allTeachersCourses;
     }
 
-    private Task<List<Course>> CreateTeacherCourses(Teacher teacher, ulong startCourseId , ulong courseCount = 3) {
+    private Task<List<Course>> CreateTeacherCourses(Teacher teacher , ulong startCourseId , ulong courseCount = 3) {
         List<Course> teacherCourses = [];
-        for(ulong i = startCourseId ; i <= courseCount ; i++) {
+        for(ulong i = startCourseId ; i <= courseCount + startCourseId ; i++) {
             Course course = Course.New("Course_Code_"+i , "Course_Name_"+i , teacher.Id);
             teacher.Courses.Add(course);
+            teacherCourses.Add(course);
         }
         return Task.FromResult(teacherCourses);
     }
 
-    private async Task CreateAllExamResultsAsync(List<Student> students,List<Course> teachersCourses) {
-        foreach(var student in students) {
-            await CreateStudentExamResultsAsync(student , teachersCourses);
+
+    private async Task CreateAllExamResultsIfNeededAsync(List<ExamResult> allExams) {
+        try {
+            if(_dbContext.ExamResults.Any()) {
+                return;
+            }
+            await _dbContext.ExamResults.AddRangeAsync(allExams);
+        }
+        catch(Exception ex) {
+            throw;
         }
     }
-
-    private async Task<Student> CreateStudentExamResultsAsync(Student student , List<Course> teachersCourses) {
-        foreach(var course in teachersCourses) {
-            student.Exams = await CreateExamResultAsync(10 , course.Id , course.Teacher.Id , student.Id , DateTime.Today.AddDays(-1) , 18);
-        }
-        return student;
-    }
-
-    private async Task<List<ExamResult>> CreateExamResultAsync(int count ,
-        ulong courseId , 
-        ulong teacherId ,
-        ulong studentId , 
-        DateTime examDateTime , 
-        float score)
-        => await CreateListAsync(count ,
-              (i) => ExamResult.New(courseId, teacherId,studentId,examDateTime,score));
-
-
-
-    private async Task<List<Course>> CreateCoursesAsync( ulong teacherId, int count = 40)
-          => await CreateListAsync(count ,
-              (i) => Course.New((ulong) i,"Course_Code_" + i , "Course_Name_" + i , teacherId));
-
 
     private async Task<bool> IsAnyStudentsAsync()
         => ( await _unitOfWork.Queries.Students.GetAllAsync(new(false)) ).Count > 0;
 
     private async Task<bool> IsAnyTeachersAsync()
        => ( await _unitOfWork.Queries.Teachers.GetAllAsync(new(false)) ).Count > 0;
+
+    private List<ExamResult> CreateExams(List<Student> students , List<Course> courses) {
+        ulong i = 1;
+        List<ExamResult> exams = [];
+        foreach(var course in courses) {
+            foreach(var student in students) {
+                var exam = ExamResult.New(course,student,DateTime.Today.AddDays(-(int)i),
+                    new Random().Next(10,20));
+                exams.Add(exam);
+                student.Exams = [exam];
+                course.Exams = [exam];
+                i++;
+            }
+        }
+        return ([.. exams.OrderBy(x => x.StudentId)]);
+    }
 
 }

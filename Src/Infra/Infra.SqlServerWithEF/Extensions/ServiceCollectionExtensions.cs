@@ -31,7 +31,8 @@ public static class ServiceCollectionExtensions {
 
         // ====== add dummy data
         ISchoolUOW unitOfWork = services.BuildServiceProvider().GetRequiredService<ISchoolUOW>();
-        var dummyData = new ProjectDummyData(unitOfWork);
+        AppDbContext dbContext = services.BuildServiceProvider().GetRequiredService<AppDbContext>();
+        var dummyData = new ProjectDummyData(unitOfWork,dbContext);
         await dummyData.ExecuteAsync();
         return services;
     }
