@@ -1,7 +1,5 @@
-﻿using Apps.School.Constants;
-using Domains.School.Abstractions;
+﻿using Domains.School.Abstractions;
 using Domains.School.Course.Aggregate;
-using Mapster;
 using MediatR;
 using Shared.Files.Constants;
 using Shared.Files.Extensions;
@@ -24,6 +22,7 @@ internal sealed class CreateCourseHandler(ISchoolUOW _unitOfWork)
         ( await FindCourseByCodeAsync(request.Code) )
             .ThrowIfNotNull(MessageResults.FoundCourse , request.Code);
 
-        return await CreateAndSaveAsync(Course.New(request.Code,request.Name,teacher.Id) , MessageResults.CreateCourse , request.Code);
+        return await CreateAndSaveAsync(Course.New(request.Code , request.Name , teacher.Id) ,
+            MessageResults.CreateCourse , request.Code);
     }
 }

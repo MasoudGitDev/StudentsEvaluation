@@ -1,6 +1,5 @@
 ﻿using Domains.School.Abstractions;
 using Domains.School.Course.Aggregate;
-using Domains.School.ExamResult.Aggregate;
 using Domains.School.Student.Aggregate;
 using Domains.School.Teacher.Aggregate;
 using Mapster;
@@ -46,16 +45,16 @@ internal abstract class SchoolRequestHandler<TRequest, TResult>(ISchoolUOW _unit
 
     // Queries
     protected async Task<List<TeacherDto>> GetTeacherDTOsAsync(PaginationDto model)
-        => ( await _unitOfWork.Queries.Teachers.GetAllAsync(model)).Adapt<List<TeacherDto>>();
+        => ( await _unitOfWork.Queries.Teachers.GetAllAsync(model) ).Adapt<List<TeacherDto>>();
 
-    protected async Task<List<StudentDto>> GetStudentDTOsAsync(PaginationDto model,LoadingType loadingType = LoadingType.Lazy)
-        => (await _unitOfWork.Queries.Students.GetAllAsync(model,loadingType)).Adapt<List<StudentDto>>();
+    protected async Task<List<StudentDto>> GetStudentDTOsAsync(PaginationDto model , LoadingType loadingType = LoadingType.Lazy)
+        => ( await _unitOfWork.Queries.Students.GetAllAsync(model , loadingType) ).Adapt<List<StudentDto>>();
 
     protected async Task<Student?> FindStudentByCodeAsync(string nationalCode , LoadingType loadingType = LoadingType.Lazy)
-        => await _unitOfWork.Queries.Students.GetByNationalCodeAsync(nationalCode ,loadingType);
+        => await _unitOfWork.Queries.Students.GetByNationalCodeAsync(nationalCode , loadingType);
 
     protected async Task<List<CourseDto>> GetCoursesAsync(PaginationDto model)
-        => (await _unitOfWork.Queries.Courses.GetAllAsync(model)).Adapt<List<CourseDto>>();
+        => ( await _unitOfWork.Queries.Courses.GetAllAsync(model) ).Adapt<List<CourseDto>>();
 
     protected async Task<Course?> FindCourseByCodeAsync(string code)
         => await _unitOfWork.Queries.Courses.GetByCodeAsync(code);
@@ -65,9 +64,9 @@ internal abstract class SchoolRequestHandler<TRequest, TResult>(ISchoolUOW _unit
 
     // Results
     protected static Result<List<T>> SuccessListResult<T>(string propertyName , List<T> items) {
-       return items.Count > 0 ? 
-              Result<List<T>>.Success($"{items.Count} {propertyName} found." , items) :
-              Result<List<T>>.Warning($"There is no any {propertyName} !" , items);
-        
+        return items.Count > 0 ?
+               Result<List<T>>.Success($"{items.Count} {propertyName} found." , items) :
+               Result<List<T>>.Warning($"There is no any {propertyName} !" , items);
+
     }
 }

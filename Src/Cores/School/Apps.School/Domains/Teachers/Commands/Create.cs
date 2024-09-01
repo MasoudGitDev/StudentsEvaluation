@@ -1,5 +1,4 @@
-﻿using Apps.School.Constants;
-using Domains.School.Abstractions;
+﻿using Domains.School.Abstractions;
 using Domains.School.Shared.Extensions;
 using Domains.School.Teacher.Aggregate;
 using Mapster;

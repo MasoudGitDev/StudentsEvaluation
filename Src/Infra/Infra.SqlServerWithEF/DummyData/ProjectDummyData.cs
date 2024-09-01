@@ -125,7 +125,7 @@ internal class ProjectDummyData(ISchoolUOW _unitOfWork , AppDbContext _dbContext
                 i++;
             }
         }
-        return (exams);
+        return ( exams );
     }
 
 }
