@@ -12,9 +12,10 @@ internal class CourseQueries(AppDbContext _dbContext) : ICourseQueries {
             return await courses
                     .Skip(( model.PageNumber - 1 ) * model.PageSize)
                     .Take(model.PageSize)
+                    .OrderBy(x => x.Code)
                     .ToListAsync();
         }
-        return await courses.ToListAsync();
+        return await courses.OrderBy(x=>x.Code).ToListAsync();
     }
 
     public async Task<Course?> GetByCodeAsync(string courseCode) {
