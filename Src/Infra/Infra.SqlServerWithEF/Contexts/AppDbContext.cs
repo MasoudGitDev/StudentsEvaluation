@@ -8,7 +8,8 @@ namespace Infra.SqlServerWithEF.Contexts;
 internal class AppDbContext : DbContext {
 
     public AppDbContext(DbContextOptions<AppDbContext> options):base(options) {
-        
+        this.Database.Migrate();
+        this.Database.EnsureCreated();
     }
 
     public DbSet<Student> Students { get; set; }
